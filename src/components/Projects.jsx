@@ -91,3 +91,4 @@ const Projects = () => (
 
 export default Projects;
 // Updated project info
+// Project filtering
