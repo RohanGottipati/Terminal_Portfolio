@@ -1,33 +1,36 @@
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import About from './components/About'
-import Projects from './components/Projects'
-import Skills from './components/Skills'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import Hero from "./components/Hero";
+import About from "./components/About";
+import Projects from "./components/Projects";
+import Experience from "./components/Experience";
+import ScrollToTop from "./components/ScrollToTop";
 
-function App() {
-  return (
-    <Router>
-      <div className="min-h-screen bg-black text-white">
-        <Navbar />
+const Home = () => (
+  <>
+    <Hero />
+    <About />
+  </>
+);
+
+const App = () => (
+  <BrowserRouter>
+    <ScrollToTop />
+    <div className="relative z-0 bg-primary min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1 pt-20">
         <Routes>
-          <Route path="/" element={
-            <>
-              <Hero />
-              <About />
-              <Projects />
-              <Skills />
-              <Contact />
-            </>
-          } />
+          <Route path="/" element={<Home />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/experience" element={<Experience />} />
         </Routes>
-        <Footer />
-      </div>
-    </Router>
-  )
-}
+      </main>
+      <Footer />
+    </div>
+  </BrowserRouter>
+);
 
-export default App
+export default App;
+// Analytics integration
