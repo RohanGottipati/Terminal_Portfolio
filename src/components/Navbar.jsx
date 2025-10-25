@@ -143,3 +143,4 @@ const Navbar = () => {
 export default Navbar;
 // Accessibility improvements
 // Dark mode implementation
+// Keyboard navigation
