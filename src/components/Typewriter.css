@@ -1,0 +1,27 @@
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+.blinking-cursor {
+  animation: blink 0.8s infinite;
+  font-weight: normal;
+  color: #1E3A8A;
+}
+
+.static-cursor {
+  opacity: 1;
+  font-weight: normal;
+  color: #1E3A8A;
+}
+
+.typewriter-text {
+  display: inline-block;
+  vertical-align: bottom;
+  white-space: nowrap;
+  color: #1E3A8A;
+}
