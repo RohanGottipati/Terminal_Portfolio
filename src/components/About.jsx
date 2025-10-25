@@ -1,92 +1,86 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import { Code, Database, Smartphone, Globe } from 'lucide-react'
+import React from "react";
+import { motion } from "framer-motion";
 
 const About = () => {
-  const skills = [
-    { icon: Code, title: 'Frontend Development', description: 'React, Next.js, Vue.js, TypeScript' },
-    { icon: Database, title: 'Backend Development', description: 'Node.js, Python, Express, FastAPI' },
-    { icon: Smartphone, title: 'Mobile Development', description: 'React Native, Flutter, iOS, Android' },
-    { icon: Globe, title: 'Full-Stack Solutions', description: 'End-to-end application development' }
-  ]
-
   return (
-    <section id="about" className="py-20 bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="about" className="min-h-screen flex items-center justify-center py-20">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12 px-6">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
+          initial={{ x: -100, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          viewport={{ once: true, amount: 0.3 }}
+          className="flex-shrink-0 flex justify-center"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            About Me
-          </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            I'm a passionate full-stack developer with a love for creating innovative solutions 
-            and bringing ideas to life through code.
-          </p>
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full blur-lg opacity-30"></div>
+            <img
+              src="/rohan.jpg?v=3"
+              alt="Rohan Gottipati"
+              className="relative w-48 h-48 md:w-56 md:h-56 rounded-full object-cover border-4 border-blue-500 shadow-2xl"
+            />
+          </div>
         </motion.div>
-
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+        
+        <motion.div
+          initial={{ x: 100, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          viewport={{ once: true, amount: 0.3 }}
+          className="flex-1 text-center md:text-left"
+        >
+          <motion.h2 
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
-            className="space-y-6"
+            className="text-white text-3xl md:text-4xl font-bold mb-6"
           >
-            <h3 className="text-3xl font-bold text-white mb-6">My Journey</h3>
-            <p className="text-gray-300 text-lg leading-relaxed">
-              With a strong foundation in computer science and years of hands-on experience, 
-              I specialize in building scalable web applications and mobile solutions. 
-              I'm passionate about clean code, user experience, and continuous learning.
-            </p>
-            <p className="text-gray-300 text-lg leading-relaxed">
-              When I'm not coding, you can find me exploring new technologies, 
-              contributing to open-source projects, or sharing knowledge with the developer community.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-4">
-              <span className="px-4 py-2 bg-blue-600/20 text-blue-400 rounded-full border border-blue-600/30">
-                Problem Solver
-              </span>
-              <span className="px-4 py-2 bg-purple-600/20 text-purple-400 rounded-full border border-purple-600/30">
-                Team Player
-              </span>
-              <span className="px-4 py-2 bg-green-600/20 text-green-400 rounded-full border border-green-600/30">
-                Continuous Learner
-              </span>
-            </div>
-          </motion.div>
+            About Me
+          </motion.h2>
+          
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            viewport={{ once: true }}
+            className="text-secondary text-lg md:text-xl leading-relaxed mb-6"
+          >
+            I'm a Computer Science student at Wilfrid Laurier University specializing in Big Data Systems and Data Analytics.
+          </motion.p>
+          
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            viewport={{ once: true }}
+            className="text-secondary text-lg md:text-xl leading-relaxed mb-8"
+          >
+            I love building full-stack and AI-powered tools that make life easier for others.
+          </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            initial={{ y: 20, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1.0 }}
             viewport={{ once: true }}
-            className="grid grid-cols-2 gap-6"
+            className="flex flex-wrap gap-3 justify-center md:justify-start"
           >
-            {skills.map((skill, index) => (
-              <motion.div
-                key={skill.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ scale: 1.05 }}
-                className="p-6 bg-gray-800 rounded-lg border border-gray-700 hover:border-blue-500/50 transition-all duration-300"
-              >
-                <skill.icon className="w-8 h-8 text-blue-400 mb-4" />
-                <h4 className="text-lg font-semibold text-white mb-2">{skill.title}</h4>
-                <p className="text-gray-400 text-sm">{skill.description}</p>
-              </motion.div>
-            ))}
+            <span className="px-4 py-2 bg-blue-500 bg-opacity-20 border border-blue-500 rounded-full text-blue-400 text-sm font-medium">
+              SWE
+            </span>
+            <span className="px-4 py-2 bg-blue-500 bg-opacity-20 border border-blue-500 rounded-full text-blue-400 text-sm font-medium">
+              AI Enthusiast
+            </span>
+            <span className="px-4 py-2 bg-blue-500 bg-opacity-20 border border-blue-500 rounded-full text-blue-400 text-sm font-medium">
+              Founder
+            </span>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default About
+export default About;
+// Animation improvements
