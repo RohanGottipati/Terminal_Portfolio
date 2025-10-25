@@ -1,129 +1,123 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import { ChevronDown, Github, Linkedin, Mail } from 'lucide-react'
+import React from "react";
+import { motion } from "framer-motion";
+import Typewriter from "./Typewriter";
+import { FaGithub, FaLinkedin, FaEnvelope, FaFileAlt } from "react-icons/fa";
 
 const Hero = () => {
-  const scrollToNext = () => {
-    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
-  }
+  const scrollToAbout = () => {
+    const aboutSection = document.getElementById('about');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-black" />
-      
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-blue-500/30 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -100, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+    <section className="relative w-full min-h-screen flex items-center justify-center bg-black">
+      <div className="text-center w-full flex flex-col items-center justify-center">
+        {/* Typing Animation */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="space-y-8"
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.3, ease: [0, 0.71, 0.2, 1.01] }}
+          className="mb-8"
         >
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+          <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+            <Typewriter 
+              text="Hey! I'm Rohan Gottipati" 
+              speed={30}
+            />
+          </div>
+        </motion.div>
+        
+        {/* Social Icons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.5, ease: "easeOut" }}
+          className="flex justify-center space-x-6 mb-12"
+        >
+          <motion.a
+            href="https://github.com/RohanGottipati"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-800 transition-colors duration-300"
+            aria-label="Visit GitHub profile"
           >
-            Rohan Gottipati
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto"
+            <FaGithub className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
+          </motion.a>
+          
+          <motion.a
+            href="https://www.linkedin.com/in/rohangottipati/"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-800 transition-colors duration-300"
           >
-            Full-Stack Developer & Software Engineer
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-lg text-gray-400 max-w-3xl mx-auto"
+            <FaLinkedin className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
+          </motion.a>
+          
+          <motion.a
+            href="mailto:rohan.gottipati@gmail.com"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-800 transition-colors duration-300"
           >
-            Crafting digital experiences with modern technologies. 
-            Passionate about building scalable applications and solving complex problems.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex justify-center space-x-6 pt-8"
+            <FaEnvelope className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
+          </motion.a>
+          
+          <motion.a
+            href="/Rohan_Gottipati_Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-800 transition-colors duration-300"
           >
-            <motion.a
-              href="https://github.com/RohanGottipati"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-3 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors"
-            >
-              <Github size={24} />
-            </motion.a>
-            <motion.a
-              href="https://linkedin.com/in/rohan-gottipati"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-3 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors"
-            >
-              <Linkedin size={24} />
-            </motion.a>
-            <motion.a
-              href="mailto:rohan@example.com"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-3 bg-gray-800 hover:bg-gray-700 rounded-full transition-colors"
-            >
-              <Mail size={24} />
-            </motion.a>
-          </motion.div>
+            <FaFileAlt className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
+          </motion.a>
         </motion.div>
 
-        <motion.button
+        {/* Scroll Arrow */}
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1 }}
-          onClick={scrollToNext}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-gray-400 hover:text-white transition-colors"
+          transition={{ duration: 0.8, delay: 2.0 }}
+          className="mt-8"
         >
           <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            animate={{
+              y: [0, 10, 0],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            className="cursor-pointer"
+            onClick={scrollToAbout}
           >
-            <ChevronDown size={32} />
+            <svg
+              className="w-8 h-8 text-blue-800 hover:text-blue-700 transition-colors duration-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
+            </svg>
           </motion.div>
-        </motion.button>
+        </motion.div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;
