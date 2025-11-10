@@ -11,7 +11,6 @@ EmailJS
 🚀 Features
 3D hero section with animations
 Interactive project and skill cards
-Live contact form
 Fully responsive
 
 
