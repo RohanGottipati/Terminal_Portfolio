@@ -176,9 +176,9 @@ const experiences = [
     iconBg: "#ffffff",
     date: "May 2025 – Aug 2025",
     points: [
-      "Participated in intensive startup accelerator program at Toronto's leading incubator",
-      "Developed business model and go-to-market strategy for TeachTrack AI",
-      "Pitched to investors and secured initial funding for educational technology venture",
+      "Developed and refined the TeachTrack AI prototype, enhancing scalability and validation speed by 70%",
+      "Built interactive web demos using React, Supabase, and REST APIs, accelerating iteration by 50%",
+      "Presented polished technical demos to mentors and investors, refining MVP architecture through live feedback",
     ],
   },
 ];
