@@ -22,7 +22,7 @@ const projects = [
       { name: "TypeScript", color: "green-text-gradient" },
       { name: "AI/ML", color: "pink-text-gradient" },
     ],
-    image: "/logos/letterly.png",
+    image: "/logos/Letterly.png",
     source_code_link: "https://github.com/RohanGottipati/Letterly",
   },
   {
