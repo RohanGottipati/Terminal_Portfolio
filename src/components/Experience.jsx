@@ -85,20 +85,20 @@ const customStyles = `
 
 const experiences = [
   {
-    title: "Founding Software Engineer",
+    title: "Co-Founder, Product Engineer",
     company_name: "TeachTrack AI",
     icon: "/logos/teachtrack-ai.png",
     iconBg: "#ffffff",
     date: "Jan 2025 – Present",
     points: [
-      "Co-Founded an AI EdTech platform with Python, Flask, and React to identify student learning gaps",
+      "Engineered an AI EdTech platform with Python, Flask, and React to identify student learning gaps",
       "Built data pipelines with Pandas + SQL to automate assessments and generate reports, cutting effort by 40%",
       "Created interactive dashboards using Chart.js + React to track performance, increasing teacher use by 25%",
       "Integrated Git version control, unit testing, and code reviews to ensure maintainable and scalable development",
     ],
   },
   {
-    title: "Software Developer",
+    title: "Software Engineer",
     company_name: "AvertoAI",
     icon: "/logos/Averto_AI_Logo.jpeg",
     iconBg: "#ffffff",
