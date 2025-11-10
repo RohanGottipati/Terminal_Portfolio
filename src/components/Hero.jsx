@@ -69,9 +69,7 @@ const Hero = () => {
           </motion.a>
           
           <motion.a
-            href="/Rohan_Gottipati_Resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/resume"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-800 transition-colors duration-300"

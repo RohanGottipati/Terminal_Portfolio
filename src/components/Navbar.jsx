@@ -6,7 +6,7 @@ const navLinks = [
   { id: "projects", title: "Projects", to: "/projects" },
   { id: "experience", title: "Experience", to: "/experience" },
   { id: "contact", title: "Contact", to: "/contact" },
-  { id: "resume", title: "Resume", to: "/Rohan_Gottipati_Resume.pdf" },
+  { id: "resume", title: "Resume", to: "/resume" },
 ];
 
 const Navbar = () => {
@@ -16,7 +16,7 @@ const Navbar = () => {
   const handleNavClick = (link) => {
     setOpen(false);
     
-    // For resume, let it open in new tab
+    // For resume, navigate to resume page
     if (link.id === "resume") return;
     
     // For contact, redirect to email
@@ -36,14 +36,17 @@ const Navbar = () => {
           {navLinks.map((link) =>
             link.id === "resume" ? (
               <li key={link.id}>
-                <a
-                  href={link.to}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-blue-800 font-medium transition-colors duration-300"
+                <NavLink
+                  to={link.to}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "text-blue-800 font-medium"
+                      : "text-gray-300 hover:text-blue-800 font-medium transition-colors duration-300"
+                  }
+                  onClick={() => handleNavClick(link)}
                 >
                   {link.title}
-                </a>
+                </NavLink>
               </li>
             ) : link.id === "contact" ? (
               <li key={link.id}>
@@ -97,15 +100,17 @@ const Navbar = () => {
               {navLinks.map((link) =>
                 link.id === "resume" ? (
                   <li key={link.id}>
-                    <a
-                      href={link.to}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-gray-300 hover:text-blue-800 font-medium transition-colors duration-300"
-                      onClick={() => setOpen(false)}
+                    <NavLink
+                      to={link.to}
+                      className={({ isActive }) =>
+                        isActive
+                          ? "text-blue-800 font-medium"
+                          : "text-gray-300 hover:text-blue-800 font-medium transition-colors duration-300"
+                      }
+                      onClick={() => handleNavClick(link)}
                     >
                       {link.title}
-                    </a>
+                    </NavLink>
                   </li>
                 ) : link.id === "contact" ? (
                   <li key={link.id}>

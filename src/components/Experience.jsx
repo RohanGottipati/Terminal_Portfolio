@@ -126,11 +126,11 @@ const experiences = [
     company_name: "Laurier Computing Society",
     icon: "/logos/laurier_cs_logo.png",
     iconBg: "#ffffff",
-    date: "Sept. 2025 – Present",
+    date: "May 2024 – Present",
     points: [
-      "Built Python (Pandas, NumPy) + SQL scripts to process $5,000+ records, cutting manual work by 40%",
-      "Developed custom interactive web tools with Chart.js to track expenses and budgets for 10+ events",
-      "Implemented automated Python scripts to validate transactions and flag errors in 100+ entries for accuracy",
+      "Manage annual budget and oversee financial allocations for over 300 members ensuring fiscal responsibility and compliance with university policies",
+      "Track sponsorships, reimbursements, and event expenses through organized financial reporting systems",
+      "Collaborate with the executive team to forecast costs and develop funding strategies for hackathons and large community initiatives",
     ],
   },
   {
@@ -138,11 +138,23 @@ const experiences = [
     company_name: "Virtual Reality Laurier",
     icon: "/logos/vr_laurier.jpeg",
     iconBg: "#ffffff",
-    date: "Aug 2025 – Present",
+    date: "September 2023 – Present",
     points: [
-      "Organize and execute VR/AR workshops and demonstrations for 150+ students",
-      "Coordinate with industry partners for immersive technology showcases",
-      "Plan and manage logistics for large-scale virtual reality events",
+      "Organize and lead campus hackathons and workshops introducing students to VR and 3D development",
+      "Manage logistics, budgeting, and partnerships for interactive events with more than 100 attendees each semester",
+      "Coordinate collaboration between technical and creative teams to deliver high-impact experiences",
+    ],
+  },
+  {
+    title: "Director of Marketing",
+    company_name: "Laurier Analytics",
+    icon: "/logos/laurieranalytics.jpeg",
+    iconBg: "#ffffff",
+    date: "May 2024 – Present",
+    points: [
+      "Lead social media campaigns and outreach across LinkedIn and instragram reaching over 1,000 students and professionals",
+      "Manage content calendars and oversee consistent branding for event promotions resulting in a 40 percent increase in engagement",
+      "Use analytics tools to measure campaign performance and optimize promotional strategies",
     ],
   },
   {
@@ -226,16 +238,18 @@ const ExperienceCard = ({ experience }) => {
         </p>
       </div>
 
-      <ul className='mt-5 list-disc ml-5 space-y-2'>
-        {experience.points.map((point, index) => (
-          <li
-            key={`experience-point-${index}`}
-            className='text-white-100 text-[13px] sm:text-[14px] pl-1 tracking-wider leading-relaxed'
-          >
-            {point}
-          </li>
-        ))}
-      </ul>
+      {experience.points && experience.points.length > 0 && (
+        <ul className='mt-5 list-disc ml-5 space-y-2'>
+          {experience.points.map((point, index) => (
+            <li
+              key={`experience-point-${index}`}
+              className='text-white-100 text-[13px] sm:text-[14px] pl-1 tracking-wider leading-relaxed'
+            >
+              {point}
+            </li>
+          ))}
+        </ul>
+      )}
     </VerticalTimelineElement>
   );
 };

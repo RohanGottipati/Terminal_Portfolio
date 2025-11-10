@@ -4,15 +4,15 @@ import { motion } from "framer-motion";
 
 const projects = [
   {
-    name: "TeachTrack AI",
-    description: "AI-powered EdTech platform built with Flask and React. Automatically identifies student learning gaps and generates real-time dashboards for teachers.",
+    name: "Medalyze",
+    description: "This project analyzes Olympic athlete data using R to uncover how age, physical attributes, and event factors influence performance and medal outcomes.",
     tags: [
-      { name: "Python", color: "blue-text-gradient" },
-      { name: "Flask", color: "green-text-gradient" },
-      { name: "React", color: "pink-text-gradient" },
+      { name: "R", color: "blue-text-gradient" },
+      { name: "Data Analysis", color: "green-text-gradient" },
+      { name: "Statistical Modeling", color: "pink-text-gradient" },
     ],
-    image: "/logos/TeachTrack AI.png",
-    source_code_link: "https://github.com/RohanGottipati/TeachTrackAI-Frontend",
+    image: "/logos/TeachTrackAI.jpg",
+    source_code_link: "https://github.com/RohanGottipati/Olympics_Dataset",
   },
   {
     name: "Letterly",
@@ -22,12 +22,12 @@ const projects = [
       { name: "TypeScript", color: "green-text-gradient" },
       { name: "AI/ML", color: "pink-text-gradient" },
     ],
-    image: "/logos/Letterly.png",
+    image: "/logos/letterly.png",
     source_code_link: "https://github.com/RohanGottipati/Letterly",
   },
   {
     name: "MoveMind",
-    description: "A comprehensive mental health and wellness platform designed to help users track mood, practice mindfulness, and access mental health resources.",
+    description: "Machine learning system that classifies barbell exercises (bench press, squat, deadlift, etc.) with 89.5% accuracy using wearable sensor data.",
     tags: [
       { name: "React", color: "blue-text-gradient" },
       { name: "Node.js", color: "green-text-gradient" },
