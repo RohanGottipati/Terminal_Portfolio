@@ -16,14 +16,14 @@ const projects = [
   },
   {
     name: "Letterly",
-    description: "AI-powered typing platform with LLM-driven insights, predictive performance modeling, and interactive data visualizations for enhanced typing skills.",
+    description: "This project is a web-based typing test built using React, TypeScript, and Tailwind CSS that allows users to select different test durations and text modes (like natural sentences, quotes, or code snippets) while tracking typing speed, accuracy, and backspace usage in real-time.",
     tags: [
       { name: "React", color: "blue-text-gradient" },
       { name: "TypeScript", color: "green-text-gradient" },
       { name: "AI/ML", color: "pink-text-gradient" },
     ],
     image: "/logos/Letterly.png",
-    source_code_link: "https://github.com/RohanGottipati/Letterly",
+    source_code_link: "https://github.com/RohanGottipati/Typing",
   },
   {
     name: "MoveMind",
