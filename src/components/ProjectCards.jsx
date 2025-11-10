@@ -16,7 +16,7 @@ const projects = [
   },
   {
     name: "Letterly",
-    description: "This project is a web-based typing test built using React, TypeScript, and Tailwind CSS that allows users to select different test durations and text modes (like natural sentences, quotes, or code snippets) while tracking typing speed, accuracy, and backspace usage in real-time.",
+    description: "An advanced web-based typing platform built with React, TypeScript, and Tailwind CSS that dynamically measures speed, accuracy, and behavior metrics across multiple text modes and adaptive test durations.",
     tags: [
       { name: "React", color: "blue-text-gradient" },
       { name: "TypeScript", color: "green-text-gradient" },
