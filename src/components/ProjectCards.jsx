@@ -22,7 +22,7 @@ const projects = [
       { name: "TypeScript", color: "green-text-gradient" },
       { name: "AI/ML", color: "pink-text-gradient" },
     ],
-    image: "/logos/Letterly.png",
+    image: "/logos/letterly.png",
     source_code_link: "https://github.com/RohanGottipati/Typing",
   },
   {
@@ -47,6 +47,17 @@ const projects = [
     image: "/logos/Portfolio.png",
     source_code_link: "https://github.com/RohanGottipati/Portfolio",
   },
+  {
+    name: "Quote of the Day",
+    description: "A React TypeScript application that displays daily quotes from the ZenQuotes API with dark/light mode toggle.",
+    tags: [
+      { name: "React", color: "blue-text-gradient" },
+      { name: "TypeScript", color: "green-text-gradient" },
+      { name: "Tailwind CSS", color: "pink-text-gradient" },
+    ],
+    image: "/logos/quote.png",
+    source_code_link: "https://github.com/RohanGottipati/Quote_Of_The_Day",
+  },
 ];
 
 const ProjectCard = ({ index, name, description, tags, image, source_code_link }) => {
@@ -56,15 +67,16 @@ const ProjectCard = ({ index, name, description, tags, image, source_code_link }
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       viewport={{ once: true }}
+      className="sm:w-[360px] w-full flex"
     >
       <Tilt
         tiltMaxAngleX={45}
         tiltMaxAngleY={45}
         scale={1}
         transitionSpeed={450}
-        className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full"
+        className="bg-tertiary p-5 rounded-2xl w-full flex flex-col"
       >
-        <div className="relative w-full h-[230px]">
+        <div className="relative w-full h-[230px] flex-shrink-0">
           <img
             src={image}
             alt="project_image"
@@ -90,12 +102,12 @@ const ProjectCard = ({ index, name, description, tags, image, source_code_link }
           </div>
         </div>
 
-        <div className="mt-5">
+        <div className="mt-5 flex-grow flex flex-col">
           <h3 className="text-white font-bold text-[24px]">{name}</h3>
-          <p className="mt-2 text-secondary text-[14px]">{description}</p>
+          <p className="mt-2 text-secondary text-[14px] min-h-[80px]">{description}</p>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2 flex-shrink-0">
           {tags.map((tag) => (
             <p
               key={`${name}-${tag.name}`}
@@ -111,7 +123,7 @@ const ProjectCard = ({ index, name, description, tags, image, source_code_link }
 };
 
 const ProjectCards = () => (
-  <div className="mt-20 flex flex-wrap gap-7">
+  <div className="mt-20 flex flex-wrap gap-7 items-stretch">
     {projects.map((project, index) => (
       <ProjectCard key={`project-${index}`} index={index} {...project} />
     ))}
