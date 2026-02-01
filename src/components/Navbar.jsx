@@ -18,7 +18,7 @@ const Navbar = () => {
 
     // For resume, navigate to resume page
     if (link.id === "resume") {
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       return;
     }
 
@@ -29,7 +29,7 @@ const Navbar = () => {
     }
 
     // For all other pages, force scroll to top
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   };
 
   return (

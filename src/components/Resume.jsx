@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useLayoutEffect } from "react";
 import { motion } from "framer-motion";
 import { FaDownload, FaExternalLinkAlt } from "react-icons/fa";
 
 const Resume = () => {
   const [isPdfReady, setIsPdfReady] = useState(false);
 
-  useEffect(() => {
-    // Immediate scroll
-    window.scrollTo(0, 0);
+  useLayoutEffect(() => {
+    // Immediate scroll before paint
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 
-    // Delayed scroll to override PDF viewer focus grabbing
+    // Delayed scroll to override PDF viewer focus grab
     const timer = setTimeout(() => {
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       setIsPdfReady(true);
     }, 600);
 
@@ -20,10 +20,10 @@ const Resume = () => {
     };
   }, []);
 
-  // Re-force scroll when PDF becomes ready, just in case
-  useEffect(() => {
+  // Re-force scroll when PDF becomes ready
+  useLayoutEffect(() => {
     if (isPdfReady) {
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     }
   }, [isPdfReady]);
 
