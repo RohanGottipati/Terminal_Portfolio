@@ -23,7 +23,7 @@ const Contact = () => {
       ...form,
       [name]: value,
     });
-    
+
     if (error) setError("");
   };
 
@@ -49,9 +49,9 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
     setError("");
 
@@ -77,7 +77,7 @@ const Contact = () => {
             email: "",
             message: "",
           });
-          
+
           setTimeout(() => setSuccess(false), 5000);
         },
         (error) => {
@@ -89,7 +89,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black-100 px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen flex items-center justify-center bg-transparent px-4 sm:px-6 lg:px-8 py-8">
       <div className="w-full max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0 }}
@@ -204,7 +204,7 @@ const Contact = () => {
                   Feel free to interact with the setup!
                 </p>
               </motion.div>
-              
+
               <div className="w-full h-full flex items-center justify-center">
                 <ComputersCanvas />
               </div>

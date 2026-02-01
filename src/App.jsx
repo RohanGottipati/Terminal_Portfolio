@@ -8,6 +8,7 @@ import Projects from "./components/Projects";
 import Experience from "./components/Experience";
 import Resume from "./components/Resume";
 import ScrollToTop from "./components/ScrollToTop";
+import SplashCursor from "./components/SplashCursor";
 
 const Home = () => (
   <>
@@ -19,9 +20,20 @@ const Home = () => (
 const App = () => (
   <BrowserRouter>
     <ScrollToTop />
-    <div className="relative z-0 bg-primary min-h-screen flex flex-col">
+    <div className="relative z-0 min-h-screen flex flex-col">
+      <SplashCursor
+        SIM_RESOLUTION={256}
+        DYE_RESOLUTION={1440}
+        DENSITY_DISSIPATION={3.5}
+        VELOCITY_DISSIPATION={2.5}
+        PRESSURE={0.1}
+        CURL={10}
+        SPLAT_RADIUS={0.2}
+        SPLAT_FORCE={6000}
+        COLOR_UPDATE_SPEED={1}
+      />
       <Navbar />
-      <main className="flex-1 pt-20">
+      <main className="flex-1 pt-20 relative z-10">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/projects" element={<Projects />} />
@@ -29,7 +41,9 @@ const App = () => (
           <Route path="/resume" element={<Resume />} />
         </Routes>
       </main>
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   </BrowserRouter>
 );

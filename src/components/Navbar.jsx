@@ -15,21 +15,25 @@ const Navbar = () => {
 
   const handleNavClick = (link) => {
     setOpen(false);
-    
+
     // For resume, navigate to resume page
-    if (link.id === "resume") return;
-    
+    if (link.id === "resume") {
+      window.scrollTo(0, 0);
+      return;
+    }
+
     // For contact, redirect to email
     if (link.id === "contact") {
       window.location.href = "mailto:rohan.gottipati@gmail.com";
       return;
     }
-    
-    // For all other pages, ScrollToTop component will handle scrolling
+
+    // For all other pages, force scroll to top
+    window.scrollTo(0, 0);
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-30 bg-black shadow-lg">
+    <nav className="fixed top-0 left-0 w-full z-30 bg-black/20 backdrop-blur-sm shadow-lg">
       <div className="max-w-7xl mx-auto flex items-center justify-center px-6 py-4">
         {/* Desktop Navigation - Centered */}
         <ul className="hidden md:flex gap-8 justify-center items-center">

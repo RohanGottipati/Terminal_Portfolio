@@ -12,7 +12,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center bg-black">
+    <section className="relative w-full min-h-screen flex items-center justify-center bg-transparent">
       <div className="text-center w-full flex flex-col items-center justify-center">
         {/* Typing Animation */}
         <motion.div
@@ -22,13 +22,13 @@ const Hero = () => {
           className="mb-8"
         >
           <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            <Typewriter 
-              text="Hey! I'm Rohan Gottipati" 
+            <Typewriter
+              text="Hey! I'm Rohan Gottipati"
               speed={30}
             />
           </div>
         </motion.div>
-        
+
         {/* Social Icons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -47,7 +47,7 @@ const Hero = () => {
           >
             <FaGithub className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
           </motion.a>
-          
+
           <motion.a
             href="https://www.linkedin.com/in/rohangottipati/"
             target="_blank"
@@ -58,7 +58,7 @@ const Hero = () => {
           >
             <FaLinkedin className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
           </motion.a>
-          
+
           <motion.a
             href="mailto:rohan.gottipati@gmail.com"
             whileHover={{ scale: 1.1 }}
@@ -67,7 +67,7 @@ const Hero = () => {
           >
             <FaEnvelope className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
           </motion.a>
-          
+
           <motion.a
             href="/resume"
             whileHover={{ scale: 1.1 }}

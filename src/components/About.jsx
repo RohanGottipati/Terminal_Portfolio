@@ -24,7 +24,7 @@ const About = () => {
             </div>
           </div>
         </motion.div>
-        
+
         <motion.div
           initial={{ x: 100, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
@@ -32,7 +32,7 @@ const About = () => {
           viewport={{ once: true, amount: 0.3 }}
           className="flex-1 text-center md:text-left"
         >
-          <motion.h2 
+          <motion.h2
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
@@ -41,7 +41,7 @@ const About = () => {
           >
             About Me
           </motion.h2>
-          
+
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
@@ -50,7 +50,7 @@ const About = () => {
             className="text-secondary text-base md:text-lg leading-relaxed mb-6"
           >
             <p className="mb-4">
-              Computer Science Student @ Wilfrid Laurier University, Big Data Systems Concentration and Option in Data Analytics
+              Computer Science Student @ Wilfrid Laurier University, Big Data Systems Concentration
             </p>
           </motion.div>
 
@@ -71,7 +71,7 @@ const About = () => {
               Builder
             </span>
           </motion.div>
-          
+
           <motion.div
             initial={{ y: 20, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
@@ -80,7 +80,10 @@ const About = () => {
             className="text-secondary text-sm md:text-base leading-relaxed mb-8 space-y-3"
           >
             <p>
-              - Currently building AI-powered education tools @ TeachTrack AI
+              - Software Engineer Intern @ DOUBL and OneChart
+            </p>
+            <p>
+              - AI/ML Research Assistant at Wilfrid Laurier University
             </p>
             <p>
               - Interested in software engineering, data systems, and machine learning
@@ -88,9 +91,7 @@ const About = () => {
             <p>
               - Constantly learning backend architecture, cloud dev, and full-stack design
             </p>
-            <p>
-              - Passionate about creating tools that make learning smarter and more accessible.
-            </p>
+
           </motion.div>
         </motion.div>
       </div>

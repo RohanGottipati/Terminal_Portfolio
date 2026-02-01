@@ -127,27 +127,109 @@ const technologies = [
 
 const experiences = [
   {
-    title: "Co-Founder, Software Development Lead",
-    company_name: "TeachTrack AI",
-    icon: starbucks,
+    title: "Software Developer Intern (Full Stack)",
+    company_name: "OneChart",
+    icon: "/logos/onechart.jpg",
     iconBg: "#383E56",
-    date: "Jan 2025 – Present",
+    date: "Jan 2026 – Present",
     points: [
-      "Built an AI platform with Flask and React to automate student learning gap analysis",
-      "Created real-time dashboards and data pipelines that save teachers 12+ hours/week",
-      "Improved AI accuracy by 30% using iterative educator feedback",
+      "Enhanced clinical data management by implementing backend systems with TypeScript and Supabase.",
+      "Enabled session tracking and patient context by building API endpoints connecting frontend to database.",
     ],
   },
   {
-    title: "Math and Coding Tutor",
-    company_name: "Varsity Tutors",
-    icon: tesla,
+    title: "Software Developer Intern",
+    company_name: "DOUBL",
+    icon: "/logos/doubl.jpg",
     iconBg: "#E6DEDD",
-    date: "Nov 2024 – Present",
+    date: "Jan 2026 – Present",
     points: [
-      "Tutored students in Python, Java, and algorithm problem solving",
-      "Designed custom programming projects to build real-world skills",
-      "Advised students on AI and software development career paths",
+      "Accelerated client acquisition demos by developing interactive integrations using JavaScript and React.",
+      "Enhanced product showcase capabilities by building customizable demos with DOUBL’s platform APIs.",
+    ],
+  },
+  {
+    title: "AI/ML Research Assistant",
+    company_name: "Wilfrid Laurier University",
+    icon: "/logos/wilfrid_laurier_university.png",
+    iconBg: "#383E56",
+    date: "Jan 2026 – Present",
+    points: [
+      "Advanced emotion-inspired AI research by conducting literature reviews on affective computing models.",
+      "Supported emotional state modeling by assisting with data collection and system design for AI systems.",
+    ],
+  },
+  {
+    company_name: "Laurier Computing Society",
+    icon: "/logos/laurier_cs_logo.jpg",
+    iconBg: "#383E56",
+    date: "Sep 2025 – Present",
+    roles: [
+      {
+        title: "VP of Finance",
+        date: "Jan 2026 – Present",
+        points: [
+          "Manage annual budget and oversee financial allocations, ensuring fiscal responsibility.",
+          "Track sponsorships, reimbursements, and event expenses through organized financial reporting systems.",
+        ],
+      },
+      {
+        title: "Finance Coordinator",
+        date: "Sep 2025 – Jan 2026",
+        points: [
+          "Assisted in managing the club's financial operations and tracking expenses for various events.",
+          "Supported the VP of Finance in preparing budget reports and processing reimbursement requests.",
+        ],
+      },
+    ],
+  },
+  {
+    title: "Co-Founder, Software Engineer",
+    company_name: "TeachTrack AI",
+    icon: "/logos/teachtrack-ai.png",
+    iconBg: "#E6DEDD",
+    date: "Jan 2025 – Jan 2026",
+    points: [
+      "Developed an AI EdTech startup platform using Python, Flask, and React to identify student learning gaps.",
+      "Built data pipelines with Pandas + SQL to automate assessments and generate reports, cutting effort by 40%.",
+      "Created interactive dashboards using Chart.js + React to track performance, increasing weekly teacher use.",
+      "Integrated Git version control, unit testing, and code reviews to ensure maintainable and scalable development.",
+    ],
+  },
+  {
+    title: "Software Engineer Intern",
+    company_name: "AvertoAI",
+    icon: "/logos/Averto_AI_Logo.jpeg",
+    iconBg: "#383E56",
+    date: "May 2025 – Dec 2025",
+    points: [
+      "Developed an MVP with Python, FastAPI, and SQL to process purchasing data, reducing excess orders by 25%.",
+      "Implemented backend APIs and SQL models to manage supplier records and improve inventory reliability.",
+      "Designed and optimized database queries and API endpoints, improving response times and system stability.",
+    ],
+  },
+  {
+    title: "Basecamp Sprint + Voyage Fellow",
+    company_name: "DMZ",
+    icon: "/logos/dmz.png",
+    iconBg: "#E6DEDD",
+    date: "May 2025 – Aug 2025",
+    points: [
+      "Developed and refined the TeachTrack AI prototype, enhancing scalability and validation speed by 60%.",
+      "Built interactive web demos using React and streamlined REST APIs, accelerating iteration cycles.",
+      "Presented polished technical demos to mentors and investors, refining MVP architecture through live feedback.",
+    ],
+  },
+  {
+    title: "Computer Science Instructor",
+    company_name: "Varsity Tutors",
+    icon: "/logos/varsity-tutors.png",
+    iconBg: "#383E56",
+    date: "Nov 2024 – Dec 2025",
+    points: [
+      "Taught Python, Java, OOP, data structures and algorithms to individual and group classes of 10+ students.",
+      "Developed custom coding exercises and implementations for arrays, linked lists, stacks, queues, and trees.",
+      "Walked through debugging, recursion traces, and time complexity concepts to strengthen problem solving.",
     ],
   },
 ];
@@ -181,88 +263,81 @@ const testimonials = [
 
 const projects = [
   {
-    name: "TeachTrack AI",
+    name: "Spectra",
     description:
-      "AI-powered EdTech platform built with Flask and React. Automatically identifies student learning gaps and generates real-time dashboards for teachers.",
+      "Spectra is a real-time behavioral classification and analytics platform that acts as a security layer for AI agents on the Solana blockchain.",
     tags: [
       {
-        name: "Python",
+        name: "Solana",
         color: "blue-text-gradient",
       },
       {
-        name: "Flask",
+        name: "AI Agents",
         color: "green-text-gradient",
       },
       {
-        name: "React",
+        name: "Analytics",
         color: "pink-text-gradient",
       },
     ],
-    image: carrent,
-    source_code_link: "https://github.com/",
+    image: "/logos/spectra.png",
+    source_code_link: "https://devpost.com/software/s-e-n-t-r-a",
+    source_code_logo: "/logos/devpost.jpg"
   },
   {
-    name: "AI Resume Analyzer",
-    description:
-      "A tool using OpenAI + Flask + React to generate ATS-optimized feedback on student resumes. Highlights formatting issues, keyword gaps, and degree relevance.",
+    name: "Medalyze",
+    description: "This project analyzes Olympic athlete data using R to uncover how age, physical attributes, and event factors influence performance and medal outcomes.",
     tags: [
-      {
-        name: "React",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "Flask",
-        color: "green-text-gradient",
-      },
-      {
-        name: "OpenAI API",
-        color: "pink-text-gradient",
-      },
+      { name: "R", color: "blue-text-gradient" },
+      { name: "Data Analysis", color: "green-text-gradient" },
+      { name: "Statistical Modeling", color: "pink-text-gradient" },
     ],
-    image: jobit,
-    source_code_link: "https://github.com/",
+    image: "/logos/TeachTrackAI.jpg",
+    source_code_link: "https://github.com/RohanGottipati/Olympics_Dataset",
   },
   {
-    name: "Visual Job Application Tracker",
-    description:
-      "A job tracker web app with filtering and real-time visual updates. Helps students manage roles, companies, and interview progress.",
+    name: "Letterly",
+    description: "An advanced web-based typing platform built with React, TypeScript, and Tailwind CSS that dynamically measures speed, accuracy, and behavior metrics across multiple text modes and adaptive test durations.",
     tags: [
-      {
-        name: "React",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "Node.js",
-        color: "green-text-gradient",
-      },
-      {
-        name: "Tailwind CSS",
-        color: "pink-text-gradient",
-      },
+      { name: "React", color: "blue-text-gradient" },
+      { name: "TypeScript", color: "green-text-gradient" },
+      { name: "AI/ML", color: "pink-text-gradient" },
     ],
-    image: tripguide,
-    source_code_link: "https://github.com/",
+    image: "/logos/typing.png",
+    source_code_link: "https://github.com/RohanGottipati/Typing",
   },
   {
-    name: "Interactive Job Market Dashboard",
-    description:
-      "Real-time dashboard with public job data visualizations (salary trends, roles, locations). Built with Chart.js and React.",
+    name: "MoveMind",
+    description: "Machine learning system that classifies barbell exercises (bench press, squat, deadlift, etc.) with 89.5% accuracy using wearable sensor data.",
     tags: [
-      {
-        name: "React",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "Chart.js",
-        color: "green-text-gradient",
-      },
-      {
-        name: "Node.js",
-        color: "pink-text-gradient",
-      },
+      { name: "React", color: "blue-text-gradient" },
+      { name: "Node.js", color: "green-text-gradient" },
+      { name: "MongoDB", color: "pink-text-gradient" },
     ],
-    image: tripguide,
-    source_code_link: "https://github.com/",
+    image: "/logos/MoveMind.webp",
+    source_code_link: "https://github.com/RohanGottipati/MoveMind",
+  },
+  {
+    name: "Portfolio",
+    description: "Interactive 3D portfolio website showcasing projects and skills with Three.js animations, responsive design, and modern UI components.",
+    tags: [
+      { name: "React", color: "blue-text-gradient" },
+      { name: "Three.js", color: "green-text-gradient" },
+      { name: "Tailwind CSS", color: "pink-text-gradient" },
+    ],
+    image: "/logos/Portfolio.png",
+    source_code_link: "https://github.com/RohanGottipati/Portfolio",
+  },
+  {
+    name: "Quote of the Day",
+    description: "A React TypeScript application that displays daily quotes from the ZenQuotes API with dark/light mode toggle.",
+    tags: [
+      { name: "React", color: "blue-text-gradient" },
+      { name: "TypeScript", color: "green-text-gradient" },
+      { name: "Tailwind CSS", color: "pink-text-gradient" },
+    ],
+    image: "/logos/quote.png",
+    source_code_link: "https://github.com/RohanGottipati/Quote_Of_The_Day",
   },
 ];
 
@@ -279,4 +354,3 @@ const education = [
 ];
 
 export { services, technologies, experiences, testimonials, projects, education };
-// i18n support

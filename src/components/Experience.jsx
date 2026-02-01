@@ -83,105 +83,7 @@ const customStyles = `
   }
 `;
 
-const experiences = [
-  {
-    title: "Co-Founder, Product Engineer",
-    company_name: "TeachTrack AI",
-    icon: "/logos/teachtrack-ai.png",
-    iconBg: "#ffffff",
-    date: "Jan 2025 – Present",
-    points: [
-      "Engineered an AI EdTech platform with Python, Flask, and React to identify student learning gaps",
-      "Built data pipelines with Pandas + SQL to automate assessments and generate reports, cutting effort by 40%",
-      "Created interactive dashboards using Chart.js + React to track performance, increasing teacher use by 25%",
-      "Integrated Git version control, unit testing, and code reviews to ensure maintainable and scalable development",
-    ],
-  },
-  {
-    title: "Software Engineer",
-    company_name: "AvertoAI",
-    icon: "/logos/Averto_AI_Logo.jpeg",
-    iconBg: "#ffffff",
-    date: "May 2025 – Sep. 2025",
-    points: [
-      "Developed an MVP with Python, FastAPI, and SQL to process purchasing data, reducing excess orders by 40%",
-      "Implemented backend APIs and SQL models to manage supplier records and improve inventory reliability",
-      "Delivered the MVP system, helping the startup secure $50,000 worth of grants and validate product-market fit",
-    ],
-  },
-  {
-    title: "Math and Coding Instructor",
-    company_name: "Varsity Tutors",
-    icon: "/logos/varsity-tutors.png",
-    iconBg: "#ffffff",
-    date: "Nov 2024 – Sep. 2025",
-    points: [
-      "Taught Python, Java, OOP, and data structures to individual and group classes of 10+ students",
-      "Created custom lesson plans and applied detailed performance tracking to address gaps in CS and math skills",
-      "Led hands-on coding projects and built interactive tools to strengthen engagement and collaborative learning",
-    ],
-  },
-  {
-    title: "Finance Coordinator",
-    company_name: "Laurier Computing Society",
-    icon: "/logos/laurier_cs_logo.png",
-    iconBg: "#ffffff",
-    date: "May 2024 – Present",
-    points: [
-      "Manage annual budget and oversee financial allocations for over 300 members ensuring fiscal responsibility and compliance with university policies",
-      "Track sponsorships, reimbursements, and event expenses through organized financial reporting systems",
-      "Collaborate with the executive team to forecast costs and develop funding strategies for hackathons and large community initiatives",
-    ],
-  },
-  {
-    title: "Director of Events",
-    company_name: "Virtual Reality Laurier",
-    icon: "/logos/vr_laurier.jpeg",
-    iconBg: "#ffffff",
-    date: "September 2023 – Present",
-    points: [
-      "Organize and lead campus hackathons and workshops introducing students to VR and 3D development",
-      "Manage logistics, budgeting, and partnerships for interactive events with more than 100 attendees each semester",
-      "Coordinate collaboration between technical and creative teams to deliver high-impact experiences",
-    ],
-  },
-  {
-    title: "Director of Marketing",
-    company_name: "Laurier Analytics",
-    icon: "/logos/laurieranalytics.jpeg",
-    iconBg: "#ffffff",
-    date: "May 2024 – Present",
-    points: [
-      "Lead social media campaigns and outreach across LinkedIn and instragram reaching over 1,000 students and professionals",
-      "Manage content calendars and oversee consistent branding for event promotions resulting in a 40 percent increase in engagement",
-      "Use analytics tools to measure campaign performance and optimize promotional strategies",
-    ],
-  },
-  {
-    title: "Startup Founder Hub Member",
-    company_name: "Microsoft Azure",
-    icon: "/logos/azure.png",
-    iconBg: "#ffffff",
-    date: "Aug 2025 – Sep 2025",
-    points: [
-      "Selected for exclusive startup accelerator program with Microsoft Azure",
-      "Gained access to cloud computing resources and mentorship opportunities",
-      "Collaborated with other founders on scaling AI-powered educational platforms",
-    ],
-  },
-  {
-    title: "Sprint + Voyage",
-    company_name: "DMZ",
-    icon: "/logos/dmz.png",
-    iconBg: "#ffffff",
-    date: "May 2025 – Aug 2025",
-    points: [
-      "Developed and refined the TeachTrack AI prototype, enhancing scalability and validation speed by 70%",
-      "Built interactive web demos using React, Supabase, and REST APIs, accelerating iteration by 50%",
-      "Presented polished technical demos to mentors and investors, refining MVP architecture through live feedback",
-    ],
-  },
-];
+import { experiences } from "../constants";
 
 const ExperienceCard = ({ experience }) => {
   return (
@@ -196,7 +98,7 @@ const ExperienceCard = ({ experience }) => {
       contentArrowStyle={{ borderRight: "7px solid  #232631" }}
       date={experience.date}
       dateClassName="text-white font-semibold text-sm sm:text-base"
-      iconStyle={{ 
+      iconStyle={{
         background: "transparent",
         boxShadow: "none",
         display: "flex",
@@ -220,7 +122,7 @@ const ExperienceCard = ({ experience }) => {
               e.target.nextSibling.style.display = 'flex';
             }}
           />
-          <div 
+          <div
             className='w-full h-full flex items-center justify-center text-gray-600 font-bold text-xs hidden'
             style={{ display: 'none' }}
           >
@@ -230,26 +132,58 @@ const ExperienceCard = ({ experience }) => {
       }
     >
       <div className="space-y-2">
-        <h3 className='text-white text-[20px] sm:text-[24px] font-bold leading-tight'>
-          {experience.title}
-        </h3>
-        <p className='text-secondary text-[14px] sm:text-[16px] font-semibold leading-tight'>
-          {experience.company_name}
-        </p>
-      </div>
+        {experience.roles ? (
+          // Render Promotion/Group Layout
+          <div>
+            <h3 className='text-white text-[24px] font-bold'>{experience.company_name}</h3>
+            <p className='text-secondary text-[16px] font-semibold mb-4'>{experience.date}</p>
 
-      {experience.points && experience.points.length > 0 && (
-        <ul className='mt-5 list-disc ml-5 space-y-2'>
-          {experience.points.map((point, index) => (
-            <li
-              key={`experience-point-${index}`}
-              className='text-white-100 text-[13px] sm:text-[14px] pl-1 tracking-wider leading-relaxed'
-            >
-              {point}
-            </li>
-          ))}
-        </ul>
-      )}
+            <div className='relative mt-6 ml-2 pl-6 space-y-8'>
+              {/* Vertical connecting line */}
+              <div className="absolute left-[0px] top-[22px] bottom-6 w-[2px] bg-slate-700"></div>
+              {experience.roles.map((role, index) => (
+                <div key={index} className='relative'>
+                  {/* Timeline Dot */}
+                  <div className='absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-slate-700 border-2 border-[#1d1836]'></div>
+
+                  <h4 className='text-white text-[20px] font-bold'>{role.title}</h4>
+                  <p className='text-secondary text-[14px] font-semibold'>{role.date}</p>
+
+                  <ul className='mt-2 list-disc ml-5 space-y-1'>
+                    {role.points.map((point, idx) => (
+                      <li key={idx} className='text-white-100 text-[13px] pl-1 tracking-wider'>
+                        {point}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          // Render Standard Single Role Layout
+          <>
+            <h3 className='text-white text-[20px] sm:text-[24px] font-bold leading-tight'>
+              {experience.title}
+            </h3>
+            <p className='text-secondary text-[14px] sm:text-[16px] font-semibold leading-tight'>
+              {experience.company_name}
+            </p>
+            {experience.points && experience.points.length > 0 && (
+              <ul className='mt-5 list-disc ml-5 space-y-2'>
+                {experience.points.map((point, index) => (
+                  <li
+                    key={`experience-point-${index}`}
+                    className='text-white-100 text-[13px] sm:text-[14px] pl-1 tracking-wider leading-relaxed'
+                  >
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </div>
     </VerticalTimelineElement>
   );
 };
@@ -265,7 +199,7 @@ const Experience = () => {
     >
       {/* Inject custom styles */}
       <style dangerouslySetInnerHTML={{ __html: customStyles }} />
-      
+
       <motion.div className="text-center mb-12">
         <p className="text-secondary text-sm uppercase tracking-wider mb-2">
           What I have done so far

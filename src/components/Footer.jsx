@@ -31,11 +31,11 @@ const Footer = () => {
               <FaEnvelope className="text-2xl" />
             </a>
           </div>
-          
+
           {/* Copyright */}
           <div className="text-center">
             <p className="text-secondary text-sm">
-              Rohan Gottipati 2025 – All Rights Reserved
+              Rohan Gottipati 2026 – All Rights Reserved
             </p>
           </div>
         </div>
