@@ -4,28 +4,11 @@ import { FaDownload, FaExternalLinkAlt } from "react-icons/fa";
 
 const Resume = () => {
   const [isPdfReady, setIsPdfReady] = useState(false);
+  const resumeUrl = `${import.meta.env.BASE_URL}Rohan_Gottipati_resume.pdf`;
 
   useLayoutEffect(() => {
-    // Immediate scroll before paint
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-
-    // Delayed scroll to override PDF viewer focus grab
-    const timer = setTimeout(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-      setIsPdfReady(true);
-    }, 600);
-
-    return () => {
-      clearTimeout(timer);
-    };
   }, []);
-
-  // Re-force scroll when PDF becomes ready
-  useLayoutEffect(() => {
-    if (isPdfReady) {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    }
-  }, [isPdfReady]);
 
   return (
     <section className="min-h-screen py-20 bg-transparent">
@@ -53,7 +36,7 @@ const Resume = () => {
           className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
         >
           <motion.a
-            href="/planet/Rohan_Gottipati_resume.pdf"
+            href={resumeUrl}
             download
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -65,7 +48,7 @@ const Resume = () => {
           </motion.a>
 
           <motion.a
-            href="/planet/Rohan_Gottipati_resume.pdf"
+            href={resumeUrl}
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
@@ -91,24 +74,12 @@ const Resume = () => {
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
               </div>
             )}
-            {isPdfReady && (
-              <object
-                data="/planet/Rohan_Gottipati_resume.pdf"
-                type="application/pdf"
-                className="w-full h-full border-0"
-              >
-                <div className="flex flex-col items-center justify-center h-full text-white bg-gray-900 p-6 text-center">
-                  <p className="mb-4 text-xl">Unable to display PDF directly.</p>
-                  <a
-                    href="/planet/Rohan_Gottipati_resume.pdf"
-                    download
-                    className="px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Download Resume
-                  </a>
-                </div>
-              </object>
-            )}
+            <iframe
+              src={resumeUrl}
+              title="Resume PDF"
+              className="w-full h-full border-0"
+              onLoad={() => setIsPdfReady(true)}
+            />
           </div>
         </motion.div>
       </div>
