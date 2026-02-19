@@ -4,7 +4,7 @@ import { FaDownload, FaExternalLinkAlt } from "react-icons/fa";
 
 const Resume = () => {
   const [isPdfReady, setIsPdfReady] = useState(false);
-  const resumeUrl = `${import.meta.env.BASE_URL}Rohan_Gottipati_resume.pdf`;
+  const resumeUrl = `${import.meta.env.BASE_URL}resume.pdf`;
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
