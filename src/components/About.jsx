@@ -1,5 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const About = () => {
   return (
@@ -15,12 +17,15 @@ const About = () => {
           <div className="relative w-48 h-48 md:w-56 md:h-56">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full blur-lg opacity-30"></div>
             <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-blue-500 shadow-2xl">
-              <img
-                src="/rohan.jpg?v=3"
-                alt="Rohan Gottipati"
-                className="w-full h-full object-cover scale-[2.5]"
-                style={{ objectPosition: '48% 15%' }}
-              />
+              <Avatar className="w-full h-full rounded-full">
+                <AvatarImage
+                  src="/rohan.jpg?v=3"
+                  alt="Rohan Gottipati"
+                  className="w-full h-full object-cover scale-[2.5]"
+                  style={{ objectPosition: '48% 15%' }}
+                />
+                <AvatarFallback className="text-2xl bg-gray-800 text-white">RG</AvatarFallback>
+              </Avatar>
             </div>
           </div>
         </motion.div>
@@ -61,15 +66,15 @@ const About = () => {
             viewport={{ once: true }}
             className="flex flex-wrap gap-3 justify-center md:justify-start mb-6"
           >
-            <span className="px-4 py-2 bg-blue-500 bg-opacity-20 border border-blue-500 rounded-full text-blue-400 text-sm font-medium">
+            <Badge variant="outline" className="px-4 py-2 bg-blue-500/20 border-blue-500 text-blue-400 text-sm font-medium rounded-full">
               Software Engineer
-            </span>
-            <span className="px-4 py-2 bg-blue-500 bg-opacity-20 border border-blue-500 rounded-full text-blue-400 text-sm font-medium">
+            </Badge>
+            <Badge variant="outline" className="px-4 py-2 bg-blue-500/20 border-blue-500 text-blue-400 text-sm font-medium rounded-full">
               Data Enthusiast
-            </span>
-            <span className="px-4 py-2 bg-blue-500 bg-opacity-20 border border-blue-500 rounded-full text-blue-400 text-sm font-medium">
+            </Badge>
+            <Badge variant="outline" className="px-4 py-2 bg-blue-500/20 border-blue-500 text-blue-400 text-sm font-medium rounded-full">
               Builder
-            </span>
+            </Badge>
           </motion.div>
 
           <motion.div
@@ -100,4 +105,3 @@ const About = () => {
 };
 
 export default About;
-// Animation improvements

@@ -1,118 +1,164 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Typewriter from "./Typewriter";
 import { FaGithub, FaLinkedin, FaEnvelope, FaFileAlt } from "react-icons/fa";
+import ProfileCard from "./ProfileCard";
+import Dither from "./Dither";
+import { profile } from "../constants";
+
+const socialLinks = [
+  {
+    href: "https://github.com/RohanGottipati",
+    icon: FaGithub,
+    label: "Visit GitHub profile",
+    external: true,
+  },
+  {
+    href: "https://www.linkedin.com/in/rohangottipati/",
+    icon: FaLinkedin,
+    label: "Visit LinkedIn profile",
+    external: true,
+  },
+  {
+    href: "mailto:rohan.gottipati@gmail.com",
+    icon: FaEnvelope,
+    label: "Send email",
+    external: false,
+  },
+  {
+    href: "/resume",
+    icon: FaFileAlt,
+    label: "View resume",
+    external: false,
+  },
+];
+
+const aboutPoints = [
+  "Software Engineer Intern @ DOUBL and OneChart",
+  "AI/ML Research Assistant at Wilfrid Laurier University",
+  "Interested in software engineering, data systems, and machine learning",
+  "Constantly learning backend architecture, cloud dev, and full-stack design",
+];
+
+const DITHER_BG = (
+  <Dither
+    waveColor={[0.32, 0.15, 1]}
+    disableAnimation={false}
+    enableMouseInteraction={false}
+    mouseRadius={1}
+    colorNum={4}
+    pixelSize={2}
+    waveAmplitude={0.3}
+    waveFrequency={3}
+    waveSpeed={0.10}
+  />
+);
+
+const AboutPoint = ({ point, index }) => (
+  <motion.li
+    initial={{ opacity: 0, x: -12 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.4, delay: 0.7 + index * 0.08 }}
+    className="group flex items-start gap-3 px-3 py-2 -mx-3 rounded-lg cursor-default
+               transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.02]"
+  >
+    <span
+      className="text-blue-400 flex-shrink-0 mt-0.5 text-base leading-snug
+                 transition-transform duration-200 ease-out group-hover:translate-x-1"
+    >
+      →
+    </span>
+    <span className="text-secondary text-sm md:text-base leading-relaxed
+                     transition-colors duration-200 group-hover:text-white">
+      {point}
+    </span>
+  </motion.li>
+);
 
 const Hero = () => {
-  const scrollToAbout = () => {
-    const aboutSection = document.getElementById('about');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  const handleContact = () => {
+    window.location.href = "mailto:rohan.gottipati@gmail.com";
   };
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center bg-transparent">
-      <div className="text-center w-full flex flex-col items-center justify-center">
-        {/* Typing Animation */}
+    <section
+      id="about"
+      className="relative w-full min-h-screen flex items-center justify-center bg-transparent px-4 sm:px-6 pt-4 pb-16"
+    >
+      <div className="max-w-6xl w-full flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
+        {/* Profile Card */}
         <motion.div
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.3, ease: [0, 0.71, 0.2, 1.01] }}
-          className="mb-8"
+          initial={{ opacity: 0, x: -24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex-shrink-0 flex justify-center w-full sm:w-auto"
         >
-          <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            <Typewriter
-              text="Hey! I'm Rohan Gottipati"
-              speed={30}
-            />
-          </div>
+          <ProfileCard
+            name={profile.name}
+            title={profile.title}
+            handle={profile.handle}
+            status={profile.status}
+            contactText={profile.contactText}
+            miniAvatarUrl={profile.miniAvatarUrl}
+            showUserInfo
+            enableTilt
+            behindGlowEnabled={false}
+            backgroundSlot={DITHER_BG}
+            onContactClick={handleContact}
+          />
         </motion.div>
 
-        {/* Social Icons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.5, ease: "easeOut" }}
-          className="flex justify-center space-x-6 mb-12"
-        >
-          <motion.a
-            href="https://github.com/RohanGottipati"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-800 transition-colors duration-300"
-            aria-label="Visit GitHub profile"
-          >
-            <FaGithub className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
-          </motion.a>
+        {/* About Me */}
+        <div className="flex-1 flex flex-col items-start text-left min-w-0 max-w-xl lg:max-w-none">
 
-          <motion.a
-            href="https://www.linkedin.com/in/rohangottipati/"
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-800 transition-colors duration-300"
-          >
-            <FaLinkedin className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
-          </motion.a>
-
-          <motion.a
-            href="mailto:rohan.gottipati@gmail.com"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-800 transition-colors duration-300"
-          >
-            <FaEnvelope className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
-          </motion.a>
-
-          <motion.a
-            href="/resume"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-800 transition-colors duration-300"
-          >
-            <FaFileAlt className="text-gray-300 text-xl hover:text-white transition-colors duration-300" />
-          </motion.a>
-        </motion.div>
-
-        {/* Scroll Arrow */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 2.0 }}
-          className="mt-8"
-        >
-          <motion.div
-            animate={{
-              y: [0, 10, 0],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="cursor-pointer"
-            onClick={scrollToAbout}
-          >
-            <svg
-              className="w-8 h-8 text-blue-800 hover:text-blue-700 transition-colors duration-300"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+          {/* Heading row — title + icons side by side */}
+          <div className="flex items-center gap-4 w-full mb-3">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="text-white text-2xl md:text-3xl font-bold"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 14l-7 7m0 0l-7-7m7 7V3"
-              />
-            </svg>
-          </motion.div>
-        </motion.div>
+              About Me
+            </motion.h2>
+
+            <motion.div
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="flex gap-2.5 items-center"
+            >
+              {socialLinks.map(({ href, icon: Icon, label, external }) => (
+                <a
+                  key={label}
+                  href={href}
+                  {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  aria-label={label}
+                  className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center
+                             hover:bg-blue-800 transition-all duration-300 hover:scale-110 flex-shrink-0"
+                >
+                  <Icon className="text-gray-300 text-base" />
+                </a>
+              ))}
+            </motion.div>
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="text-secondary text-sm md:text-base leading-relaxed mb-4"
+          >
+            Computer Science Student @ Wilfrid Laurier University, Big Data
+            Systems Concentration
+          </motion.p>
+
+          <ul className="list-none w-full space-y-0.5">
+            {aboutPoints.map((point, i) => (
+              <AboutPoint key={point} point={point} index={i} />
+            ))}
+          </ul>
+
+        </div>
       </div>
     </section>
   );

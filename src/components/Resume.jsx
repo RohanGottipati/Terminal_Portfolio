@@ -1,14 +1,36 @@
-import { useEffect, useState, useLayoutEffect } from "react";
+import { useLayoutEffect, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaDownload, FaExternalLinkAlt } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
+
+const MotionButton = motion(Button);
 
 const Resume = () => {
-  const [isPdfReady, setIsPdfReady] = useState(false);
   const resumeUrl = `${import.meta.env.BASE_URL}resume.pdf`;
+  const [blobUrl, setBlobUrl] = useState(null);
+  const [error, setError] = useState(false);
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, []);
+
+  useEffect(() => {
+    let objectUrl;
+    fetch(resumeUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch PDF");
+        return res.blob();
+      })
+      .then((blob) => {
+        objectUrl = URL.createObjectURL(blob);
+        setBlobUrl(objectUrl);
+      })
+      .catch(() => setError(true));
+
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [resumeUrl]);
 
   return (
     <section className="min-h-screen py-20 bg-transparent">
@@ -35,30 +57,32 @@ const Resume = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
         >
-          <motion.a
-            href={resumeUrl}
-            download
+          <MotionButton
+            asChild
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-blue-800 text-white rounded-lg transition-colors duration-300 font-medium text-base w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-blue-800 focus:ring-offset-2 focus:ring-offset-black"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-blue-800 text-white rounded-lg transition-colors duration-300 font-medium text-base w-full sm:w-auto justify-center focus:ring-2 focus:ring-blue-800 focus:ring-offset-2 focus:ring-offset-black"
             aria-label="Download Resume PDF"
           >
-            <FaDownload className="text-lg" />
-            <span>Download PDF</span>
-          </motion.a>
+            <a href={resumeUrl} download>
+              <FaDownload className="text-lg" />
+              <span>Download PDF</span>
+            </a>
+          </MotionButton>
 
-          <motion.a
-            href={resumeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <MotionButton
+            asChild
+            variant="outline"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-blue-800 text-white rounded-lg transition-colors duration-300 font-medium text-base w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-blue-800 focus:ring-offset-2 focus:ring-offset-black"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-blue-800 text-white border-gray-600 rounded-lg transition-colors duration-300 font-medium text-base w-full sm:w-auto justify-center focus:ring-2 focus:ring-blue-800 focus:ring-offset-2 focus:ring-offset-black"
             aria-label="View Resume PDF in New Page"
           >
-            <FaExternalLinkAlt className="text-lg" />
-            <span>View Full PDF in New Page</span>
-          </motion.a>
+            <a href={resumeUrl} target="_blank" rel="noopener noreferrer">
+              <FaExternalLinkAlt className="text-lg" />
+              <span>View Full PDF in New Page</span>
+            </a>
+          </MotionButton>
         </motion.div>
 
         {/* Resume Viewer */}
@@ -68,18 +92,28 @@ const Resume = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="w-full flex justify-center px-4 sm:px-0"
         >
-          <div className="w-full max-w-4xl h-[80vh] bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-800 relative">
-            {!isPdfReady && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="w-full max-w-4xl h-[80vh] bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-800 flex items-center justify-center">
+            {error ? (
+              <div className="flex flex-col items-center gap-4 text-secondary">
+                <p>Could not load PDF preview.</p>
+                <a
+                  href={resumeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-blue-800 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Open PDF
+                </a>
               </div>
+            ) : !blobUrl ? (
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
+            ) : (
+              <iframe
+                src={blobUrl}
+                title="Resume PDF"
+                className="w-full h-full border-0"
+              />
             )}
-            <iframe
-              src={resumeUrl}
-              title="Resume PDF"
-              className="w-full h-full border-0"
-              onLoad={() => setIsPdfReady(true)}
-            />
           </div>
         </motion.div>
       </div>
@@ -88,4 +122,3 @@ const Resume = () => {
 };
 
 export default Resume;
-

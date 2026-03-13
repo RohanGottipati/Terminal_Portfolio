@@ -2,6 +2,10 @@ import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import { ComputersCanvas } from "./canvas";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Contact = () => {
   const formRef = useRef();
@@ -113,11 +117,13 @@ const Contact = () => {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-green-500 bg-opacity-20 border border-green-500 rounded-lg"
+                  className="mb-6"
                 >
-                  <p className="text-green-400 text-center font-medium">
-                    Thank you! I'll get back to you as soon as possible.
-                  </p>
+                  <Alert className="bg-green-500/20 border-green-500">
+                    <AlertDescription className="text-green-400 text-center font-medium">
+                      Thank you! I'll get back to you as soon as possible.
+                    </AlertDescription>
+                  </Alert>
                 </motion.div>
               )}
 
@@ -125,11 +131,13 @@ const Contact = () => {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg"
+                  className="mb-6"
                 >
-                  <p className="text-red-400 text-center font-medium">
-                    {error}
-                  </p>
+                  <Alert variant="destructive" className="bg-red-500/20 border-red-500">
+                    <AlertDescription className="text-red-400 text-center font-medium">
+                      {error}
+                    </AlertDescription>
+                  </Alert>
                 </motion.div>
               )}
 
@@ -140,48 +148,48 @@ const Contact = () => {
               >
                 <label className="flex flex-col">
                   <span className="text-white font-medium mb-2">Your Name</span>
-                  <input
+                  <Input
                     type="text"
                     name="name"
                     value={form.name}
                     onChange={handleChange}
                     placeholder="What's your good name?"
-                    className="bg-tertiary py-3 px-5 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium"
+                    className="bg-tertiary py-3 px-5 placeholder:text-secondary text-white rounded-lg border-none font-medium"
                     required
                   />
                 </label>
                 <label className="flex flex-col">
                   <span className="text-white font-medium mb-2">Your email</span>
-                  <input
+                  <Input
                     type="email"
                     name="email"
                     value={form.email}
                     onChange={handleChange}
                     placeholder="What's your web address?"
-                    className="bg-tertiary py-3 px-5 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium"
+                    className="bg-tertiary py-3 px-5 placeholder:text-secondary text-white rounded-lg border-none font-medium"
                     required
                   />
                 </label>
                 <label className="flex flex-col">
                   <span className="text-white font-medium mb-2">Your Message</span>
-                  <textarea
+                  <Textarea
                     rows={6}
                     name="message"
                     value={form.message}
                     onChange={handleChange}
                     placeholder="What you want to say?"
-                    className="bg-tertiary py-3 px-5 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium"
+                    className="bg-tertiary py-3 px-5 placeholder:text-secondary text-white rounded-lg border-none font-medium"
                     required
                   />
                 </label>
 
-                <button
+                <Button
                   type="submit"
                   disabled={loading}
-                  className="bg-tertiary py-3 px-8 rounded-xl outline-none w-fit mx-auto text-white font-bold shadow-md shadow-primary hover:bg-opacity-80 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-tertiary py-3 px-8 rounded-xl w-fit mx-auto text-white font-bold shadow-md shadow-primary hover:bg-opacity-80 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Sending..." : "Send"}
-                </button>
+                </Button>
               </form>
             </div>
           </motion.div>
@@ -217,4 +225,3 @@ const Contact = () => {
 };
 
 export default Contact;
-// Form validation

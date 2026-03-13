@@ -127,25 +127,29 @@ const technologies = [
 
 const experiences = [
   {
-    title: "Software Developer Intern (Full Stack)",
-    company_name: "OneChart",
-    icon: "/logos/onechart.jpg",
-    iconBg: "#383E56",
-    date: "Jan 2026 – Present",
-    points: [
-      "Enhanced clinical data management by implementing backend systems with TypeScript and Supabase.",
-      "Enabled session tracking and patient context by building API endpoints connecting frontend to database.",
-    ],
-  },
-  {
     title: "Software Developer Intern",
     company_name: "DOUBL",
     icon: "/logos/doubl.jpg",
     iconBg: "#E6DEDD",
     date: "Jan 2026 – Present",
     points: [
-      "Accelerated client acquisition demos by developing interactive integrations using JavaScript and React.",
-      "Enhanced product showcase capabilities by building customizable demos with DOUBL’s platform APIs.",
+      "Accelerated client acquisition demos by developing polished interactive integrations using Next.js and TypeScript.",
+      "Reduced spam emails by 95% by implementing strict rate limiting and route authentication using Resend API.",
+      "Implemented website content management by adding an admin-based Firebase CMS for text and image editing.",
+      "Expedited body scan email delivery time by 85% by automating user notification scripts for 500+ user accounts.",
+    ],
+  },
+  {
+    title: "Software Developer Intern (Full Stack)",
+    company_name: "OneChart",
+    icon: "/logos/onechart.jpg",
+    iconBg: "#383E56",
+    date: "Jan 2026 – Present",
+    points: [
+      "Built production-ready Scribe platform and Chrome extension for clinicians using TypeScript and React.",
+      "Reduced documentation time by 80% by integrating Deepgram and Gemini APIs for real-time transcription.",
+      "Enabled seamless cross-platform EMR syncing by implementing structured PDF generation with Supabase backend.",
+      "Improved data retrieval speed by 60% by architecting optimized, indexed database schemas and API endpoints.",
     ],
   },
   {
@@ -155,8 +159,10 @@ const experiences = [
     iconBg: "#383E56",
     date: "Jan 2026 – Present",
     points: [
-      "Advanced emotion-inspired AI research by conducting literature reviews on affective computing models.",
-      "Supported emotional state modeling by assisting with data collection and system design for AI systems.",
+      "Built scalable data pipelines to evaluate affective computing models applied to emotion-driven trading strategies.",
+      "Processed 10K+ labeled sentiment data points by building emotion detection pipelines using Python and NLP.",
+      "Engineered simulation environments testing 10+ agent strategies against emotion-weighted performance metrics.",
+      "Developed reproducible experiment scripts and visualizations supporting an active research paper for publication.",
     ],
   },
   {
@@ -204,8 +210,9 @@ const experiences = [
     date: "May 2025 – Dec 2025",
     points: [
       "Developed an MVP with Python, FastAPI, and SQL to process purchasing data, reducing excess orders by 25%.",
-      "Implemented backend APIs and SQL models to manage supplier records and improve inventory reliability.",
-      "Designed and optimized database queries and API endpoints, improving response times and system stability.",
+      "Implemented RESTful APIs and normalized SQL schemas to manage supplier records across multiple data sources.",
+      "Optimized queries with indexing strategies, cutting average API response latency and improving system stability.",
+      "Enhanced data accuracy by 30% by implementing multi-stage automated validation pipelines for supplier data.",
     ],
   },
   {
@@ -281,8 +288,25 @@ const projects = [
       },
     ],
     image: "/logos/spectra.png",
-    source_code_link: "https://devpost.com/software/s-e-n-t-r-a",
-    source_code_logo: "/logos/devpost.jpg"
+    links: [
+      { url: "https://github.com/RohanGottipati/Spectra", logo: null },
+      { url: "https://devpost.com/software/s-e-n-t-r-a", logo: "/logos/devpost.jpg" },
+    ],
+  },
+  {
+    name: "CareSync",
+    description:
+      "AI-powered care coordination platform for Personal Support Workers (PSWs), family members, and care coordinators.",
+    tags: [
+      { name: "AI", color: "blue-text-gradient" },
+      { name: "Healthcare", color: "green-text-gradient" },
+      { name: "React", color: "pink-text-gradient" },
+    ],
+    image: "/assets/tech/CareSync.png",
+    links: [
+      { url: "https://github.com/RohanGottipati/CareSync", logo: null },
+      { url: "https://devpost.com/software/caresync-kj2ch4", logo: "/logos/devpost.jpg" },
+    ],
   },
   {
     name: "Medalyze",
@@ -353,4 +377,14 @@ const education = [
   },
 ];
 
-export { services, technologies, experiences, testimonials, projects, education };
+const profile = {
+  name: 'Rohan Gottipati',
+  title: 'Software Engineer',
+  handle: 'rohangottipati',
+  status: 'Online',
+  contactText: 'Contact Me',
+  // Same picture as About section
+  miniAvatarUrl: '/rohan.jpg?v=3',
+};
+
+export { services, technologies, experiences, testimonials, projects, education, profile };
