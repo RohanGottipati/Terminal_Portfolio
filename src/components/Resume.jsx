@@ -9,6 +9,11 @@ const Resume = () => {
   const resumeUrl = `${import.meta.env.BASE_URL}resume.pdf`;
   const [blobUrl, setBlobUrl] = useState(null);
   const [error, setError] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -92,29 +97,37 @@ const Resume = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="w-full flex justify-center px-4 sm:px-0"
         >
-          <div className="w-full max-w-4xl h-[80vh] bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-800 flex items-center justify-center">
-            {error ? (
-              <div className="flex flex-col items-center gap-4 text-secondary">
-                <p>Could not load PDF preview.</p>
-                <a
-                  href={resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 bg-blue-800 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Open PDF
-                </a>
-              </div>
-            ) : !blobUrl ? (
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
-            ) : (
-              <iframe
-                src={blobUrl}
-                title="Resume PDF"
-                className="w-full h-full border-0"
-              />
-            )}
-          </div>
+          {isMobile ? (
+            <div className="w-full max-w-4xl bg-gray-900 rounded-xl shadow-2xl border border-gray-800 flex flex-col items-center justify-center gap-4 p-8 text-center">
+              <p className="text-secondary text-base leading-relaxed">
+                PDF preview is not supported on mobile browsers. Use the buttons above to download or open the resume in a new tab.
+              </p>
+            </div>
+          ) : (
+            <div className="w-full max-w-4xl h-[80vh] bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-800 flex items-center justify-center">
+              {error ? (
+                <div className="flex flex-col items-center gap-4 text-secondary">
+                  <p>Could not load PDF preview.</p>
+                  <a
+                    href={resumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-blue-800 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Open PDF
+                  </a>
+                </div>
+              ) : !blobUrl ? (
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
+              ) : (
+                <iframe
+                  src={blobUrl}
+                  title="Resume PDF"
+                  className="w-full h-full border-0"
+                />
+              )}
+            </div>
+          )}
         </motion.div>
       </div>
     </section>

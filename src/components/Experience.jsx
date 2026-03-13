@@ -195,7 +195,7 @@ const Experience = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="p-8 flex flex-col items-center"
+      className="p-4 sm:p-8 flex flex-col items-center"
     >
       {/* Inject custom styles */}
       <style dangerouslySetInnerHTML={{ __html: customStyles }} />

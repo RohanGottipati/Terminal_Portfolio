@@ -45,11 +45,11 @@ const skillNames = {
 
 const TechBalls = () => (
   <div className="w-full">
-    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-7 gap-4 sm:gap-6 justify-items-center max-w-7xl mx-auto">
+    <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-4 sm:gap-6 justify-items-center max-w-7xl mx-auto">
       {skills.map((skill) => (
-        <div className='w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center' key={skill}>
+        <div className='w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center' key={skill}>
           <Suspense fallback={
-            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-tertiary rounded-full border-2 border-blue-500 flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-tertiary rounded-full border-2 border-blue-500 flex items-center justify-center shadow-lg">
               <span className="text-white text-xs text-center font-medium px-2">{skillNames[skill]}</span>
             </div>
           }>

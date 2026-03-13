@@ -241,6 +241,7 @@ textarea:focus {
 /* Global styles */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -420,6 +421,13 @@ textarea:focus {
 .interaction-text:hover {
   background: rgba(30, 58, 138, 0.2);
   transform: translateX(-50%) scale(1.05);
+}
+
+@media (max-width: 639px) {
+  .profile-card-section {
+    height: 55svh !important;
+    max-height: 360px !important;
+  }
 }
 
 /* Mobile improvements */

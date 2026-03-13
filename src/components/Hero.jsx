@@ -84,7 +84,7 @@ const Hero = () => {
       id="about"
       className="relative w-full min-h-screen flex items-center justify-center bg-transparent px-4 sm:px-6 pt-4 pb-16"
     >
-      <div className="max-w-6xl w-full flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
+      <div className="max-w-6xl w-full flex flex-col lg:flex-row items-center justify-center gap-6 sm:gap-10 lg:gap-16">
         {/* Profile Card */}
         <motion.div
           initial={{ opacity: 0, x: -24 }}
