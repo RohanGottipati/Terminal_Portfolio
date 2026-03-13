@@ -431,7 +431,7 @@ const ProfileCardComponent = ({
         <section
           className="grid relative overflow-hidden backface-hidden profile-card-section"
           style={{
-            height: '80svh',
+            height: 'min(80svh, calc((100vw - 40px) / 0.718))',
             maxHeight: '540px',
             aspectRatio: '0.718',
             borderRadius: cardRadius,
@@ -510,19 +510,20 @@ const ProfileCardComponent = ({
 
               {showUserInfo && (
                 <div
-                  className="absolute z-[2] flex items-center justify-between backdrop-blur-[30px] border border-white/10 pointer-events-auto"
+                  className="absolute z-[2] flex items-center justify-between flex-wrap backdrop-blur-[30px] border border-white/10 pointer-events-auto"
                   style={{
-                    '--ui-inset': '20px',
+                    '--ui-inset': '16px',
                     '--ui-radius-bias': '6px',
                     bottom: 'var(--ui-inset)',
                     left: 'var(--ui-inset)',
                     right: 'var(--ui-inset)',
                     background: 'rgba(255, 255, 255, 0.1)',
                     borderRadius: 'calc(max(0px, var(--card-radius) - var(--ui-inset) + var(--ui-radius-bias)))',
-                    padding: '12px 14px'
+                    padding: '10px 12px',
+                    gap: '8px'
                   }}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
                     <div
                       className="rounded-full overflow-hidden border border-white/10 flex-shrink-0 bg-white/10 flex items-center justify-center"
                       style={{ width: '48px', height: '48px' }}
@@ -550,13 +551,13 @@ const ProfileCardComponent = ({
                         </span>
                       )}
                     </div>
-                    <div className="flex flex-col items-start gap-1.5">
-                      <div className="text-sm font-medium text-white/90 leading-none">@{handle}</div>
+                    <div className="flex flex-col items-start gap-1.5 min-w-0">
+                      <div className="text-sm font-medium text-white/90 leading-none truncate">@{handle}</div>
                       <div className="text-sm text-white/70 leading-none">{status}</div>
                     </div>
                   </div>
                   <button
-                    className="border border-white/10 rounded-lg px-4 py-3 text-xs font-semibold text-white/90 cursor-pointer backdrop-blur-[10px] transition-all duration-200 ease-out hover:border-white/40 hover:-translate-y-px"
+                    className="border border-white/10 rounded-lg px-3 py-2 text-xs font-semibold text-white/90 cursor-pointer backdrop-blur-[10px] transition-all duration-200 ease-out hover:border-white/40 hover:-translate-y-px flex-shrink-0"
                     onClick={handleContactClick}
                     style={{ pointerEvents: 'auto', borderRadius: '8px' }}
                     type="button"
