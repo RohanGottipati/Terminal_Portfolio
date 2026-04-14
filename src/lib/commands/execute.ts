@@ -1,10 +1,9 @@
-import { portfolioData } from "@/data/portfolio";
 import { commandRegistry, createCommandContext } from "@/lib/commands/registry";
 import type {
   CommandDefinition,
-  CommandResult,
-  HistoryEntry,
+  CommandExecutionResult,
   ParsedCommand,
+  SessionLogEntry,
 } from "@/types/terminal";
 
 function createId() {
@@ -44,22 +43,20 @@ export function resolveCommand(
   );
 }
 
-function buildUnknownCommandResult(parsed: ParsedCommand): CommandResult {
+function buildUnknownCommandResult(parsed: ParsedCommand): CommandExecutionResult {
   const suggestions = commandRegistry
     .filter((definition) => definition.command.includes(parsed.command.slice(1)))
     .map((definition) => definition.command)
-    .slice(0, 4);
+    .slice(0, 3);
 
   return {
-    type: "systemMessage",
     status: "error",
     title: "Command Not Found",
     description: "The command is not registered in this shell.",
-    payload: {
-      message: `"${parsed.command}" is not a registered command.`,
-      hint: "Run /help or type / to inspect the command menu.",
-      suggestions: suggestions.length ? suggestions : ["/help", "/about", "/projects"],
-    },
+    logLine: suggestions.length
+      ? `Unknown command ${parsed.command}. Try ${suggestions.join(", ")}.`
+      : `Unknown command ${parsed.command}. Try /help.`,
+    modal: null,
     meta: {
       canonicalCommand: parsed.normalizedInput,
     },
@@ -73,19 +70,15 @@ export function executeCommand(input: string) {
     return {
       parsed: null,
       result: {
-        type: "systemMessage",
         status: "error",
         title: "Use Slash Commands",
-        description: "Commands in this portfolio start with /. ",
-        payload: {
-          message: "This interface is command-driven.",
-          hint: "Start with /help, /about, or just type / to open the menu.",
-          suggestions: ["/help", "/about", "/projects"],
-        },
+        description: "Commands in this portfolio start with /.",
+        logLine: "Commands in the shell must start with /.",
+        modal: null,
         meta: {
           canonicalCommand: null,
         },
-      } as CommandResult,
+      } as CommandExecutionResult,
     };
   }
 
@@ -116,36 +109,15 @@ export function executeCommand(input: string) {
   };
 }
 
-export function createHistoryEntry(
-  input: string | null,
-  parsed: ParsedCommand | null,
-  result: CommandResult
-): HistoryEntry {
+export function createSessionLogEntry(
+  input: string,
+  result: CommandExecutionResult
+): SessionLogEntry {
   return {
     id: createId(),
     input,
-    parsed,
-    result,
+    summary: result.logLine,
+    status: result.status,
     createdAt: Date.now(),
-  };
-}
-
-export function createWelcomeEntry(): HistoryEntry {
-  return {
-    ...createHistoryEntry(null, null, {
-      type: "welcome",
-      status: "info",
-      title: "Welcome",
-      description: portfolioData.identity.tagline,
-      payload: {
-        heading: `Welcome to ${portfolioData.identity.shortName}`,
-        subheading:
-          "Type / to open the command menu. Start with /about, /projects, or /experience.",
-        quickCommands: portfolioData.pinnedCommands,
-      },
-      meta: {
-        canonicalCommand: null,
-      },
-    }),
   };
 }

@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
@@ -7,15 +8,18 @@ interface CommandMenuProps {
   suggestions: SuggestionItem[];
   selectedIndex: number;
   onSelect: (item: SuggestionItem) => void;
+  menuRef?: RefObject<HTMLDivElement | null>;
 }
 
 export function CommandMenu({
   suggestions,
   selectedIndex,
   onSelect,
+  menuRef,
 }: CommandMenuProps) {
   return (
     <motion.div
+      ref={menuRef}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
@@ -32,17 +36,14 @@ export function CommandMenu({
               onSelect(item);
             }}
           >
-            <div>
-              <p className="text-sm font-medium text-white">{item.label}</p>
-              <p className="text-sm text-zinc-400">{item.description}</p>
-            </div>
-            <span className="command-menu-category">{item.category}</span>
+            <span className="command-menu-label">{item.label}</span>
+            <span className="command-menu-description">{item.description}</span>
           </button>
         ))
       ) : (
         <div className="command-menu-empty">
-          <p className="text-sm font-medium text-white">No matches</p>
-          <p className="text-sm text-zinc-400">
+          <p className="command-menu-label">No matches</p>
+          <p className="command-menu-description">
             Try a different prefix or run <code>/help</code>.
           </p>
         </div>

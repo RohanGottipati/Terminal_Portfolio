@@ -3,11 +3,20 @@ import { commandRegistry } from "@/lib/commands/registry";
 import { getSuggestions } from "@/lib/commands/suggestions";
 
 describe("command suggestions", () => {
-  it("shows the full command menu on slash", () => {
+  it("shows the surfaced command menu on slash", () => {
     const suggestions = getSuggestions("/", commandRegistry, portfolioData);
 
-    expect(suggestions.some((item) => item.value === "/about")).toBe(true);
-    expect(suggestions.some((item) => item.value === "/project")).toBe(true);
+    expect(suggestions.map((item) => item.value)).toEqual([
+      "/about",
+      "/experience",
+      "/projects",
+      "/skills",
+      "/contact",
+      "/resume",
+      "/currently",
+      "/help",
+      "/clear",
+    ]);
   });
 
   it("suggests project subcommands", () => {

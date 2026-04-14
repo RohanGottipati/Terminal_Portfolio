@@ -15,13 +15,16 @@ describe("command execution", () => {
     const { result } = executeCommand("/cv");
 
     expect(result.title).toBe("Resume");
+    expect(result.modal?.title).toBe("Resume");
     expect(result.meta?.canonicalCommand).toBe("/resume");
   });
 
-  it("returns a slash-command error for plain text input", () => {
+  it("returns a shell error for plain text input", () => {
     const { result } = executeCommand("about");
 
     expect(result.title).toBe("Use Slash Commands");
     expect(result.status).toBe("error");
+    expect(result.modal).toBeNull();
+    expect(result.logLine).toBe("Commands in the shell must start with /.");
   });
 });

@@ -23,23 +23,23 @@ function getCommandSuggestions(
   query: string,
   registry: CommandDefinition[]
 ): SuggestionItem[] {
-  return registry
+  const visibleDefinitions = query
+    ? registry.filter((definition) => definition.showInMenu !== false || definition.command.startsWith(`/${query}`))
+    : registry.filter((definition) => definition.showInMenu !== false);
+
+  return visibleDefinitions
     .filter((definition) => commandMatches(definition, query))
     .map((definition) => ({
       id: definition.command,
       label: definition.command,
       value: definition.command,
       description: definition.description,
-      category: definition.category,
       kind: "command" as const,
       submitOnSelect: definition.args === "none",
     }));
 }
 
-function getProjectSuggestions(
-  query: string,
-  portfolio: PortfolioData
-): SuggestionItem[] {
+function getProjectSuggestions(query: string, portfolio: PortfolioData): SuggestionItem[] {
   return portfolio.projects
     .filter((project) => {
       if (!query) {
@@ -54,16 +54,12 @@ function getProjectSuggestions(
       label: `/project ${project.slug}`,
       value: `/project ${project.slug}`,
       description: project.summary,
-      category: "Projects",
       kind: "project" as const,
       submitOnSelect: true,
     }));
 }
 
-function getSkillSuggestions(
-  query: string,
-  portfolio: PortfolioData
-): SuggestionItem[] {
+function getSkillSuggestions(query: string, portfolio: PortfolioData): SuggestionItem[] {
   return portfolio.skills
     .filter((group) => {
       if (!query) {
@@ -78,7 +74,6 @@ function getSkillSuggestions(
       label: `/skills ${group.key}`,
       value: `/skills ${group.key}`,
       description: group.summary,
-      category: "Skills",
       kind: "skill" as const,
       submitOnSelect: true,
     }));
@@ -100,13 +95,13 @@ export function getSuggestions(
   const endsWithSpace = /\s$/.test(rawInput);
   const [baseCommand = "", ...rest] = normalized.split(" ");
   const argQuery = rest.join(" ").trim();
+  const lowerBase = baseCommand.toLowerCase();
 
-  const projectAliases = ["/project", "/proj"];
-  if (projectAliases.includes(baseCommand.toLowerCase()) && (hasSpace || endsWithSpace)) {
+  if (["/project", "/proj"].includes(lowerBase) && (hasSpace || endsWithSpace)) {
     return uniqueSuggestions(getProjectSuggestions(argQuery, portfolio));
   }
 
-  if (baseCommand.toLowerCase() === "/skills" && (hasSpace || endsWithSpace)) {
+  if (lowerBase === "/skills" && (hasSpace || endsWithSpace)) {
     return uniqueSuggestions(getSkillSuggestions(argQuery, portfolio));
   }
 

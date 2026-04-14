@@ -15,8 +15,7 @@ export type CommandCategory =
   | "Contact"
   | "Utility";
 
-export type OutputType =
-  | "welcome"
+export type ModalType =
   | "intro"
   | "timeline"
   | "projectList"
@@ -47,12 +46,6 @@ export interface IntroPayload {
   paragraphs: string[];
   highlights?: string[];
   chips?: string[];
-}
-
-export interface WelcomePayload {
-  heading: string;
-  subheading: string;
-  quickCommands: string[];
 }
 
 export interface TimelinePayload {
@@ -103,8 +96,7 @@ export interface SystemMessagePayload {
   commandGroups?: HelpGroup[];
 }
 
-export type OutputPayload =
-  | WelcomePayload
+export type ModalPayload =
   | IntroPayload
   | TimelinePayload
   | ProjectListPayload
@@ -114,20 +106,28 @@ export type OutputPayload =
   | LinkPanelPayload
   | SystemMessagePayload;
 
-export interface CommandResult {
-  type: OutputType;
+export interface ModalContent {
+  type: ModalType;
   status: CommandStatus;
   title: string;
   description?: string;
-  payload: OutputPayload;
+  payload: ModalPayload;
+}
+
+export interface CommandExecutionResult {
+  status: CommandStatus;
+  title: string;
+  description?: string;
+  logLine: string;
+  modal: ModalContent | null;
   meta?: CommandMeta;
 }
 
-export interface HistoryEntry {
+export interface SessionLogEntry {
   id: string;
-  input: string | null;
-  parsed: ParsedCommand | null;
-  result: CommandResult;
+  input: string;
+  summary: string;
+  status: CommandStatus;
   createdAt: number;
 }
 
@@ -136,7 +136,6 @@ export interface SuggestionItem {
   label: string;
   value: string;
   description: string;
-  category: string;
   kind: "command" | "project" | "skill";
   submitOnSelect?: boolean;
 }
@@ -152,6 +151,7 @@ export interface CommandDefinition {
   aliases: string[];
   category: CommandCategory;
   args: "none" | "optional" | "required";
+  showInMenu?: boolean;
   examples?: string[];
-  handler: (parsed: ParsedCommand, context: CommandContext) => CommandResult;
+  handler: (parsed: ParsedCommand, context: CommandContext) => CommandExecutionResult;
 }

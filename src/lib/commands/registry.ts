@@ -2,24 +2,46 @@ import { portfolioData } from "@/data/portfolio";
 import type {
   CommandContext,
   CommandDefinition,
-  CommandResult,
+  CommandExecutionResult,
   HelpGroup,
+  ModalContent,
   ParsedCommand,
 } from "@/types/terminal";
 
-function makeResult(
-  type: CommandResult["type"],
+function createModal(
+  type: ModalContent["type"],
   title: string,
   description: string,
-  payload: CommandResult["payload"],
-  status: CommandResult["status"] = "success"
-): CommandResult {
+  payload: ModalContent["payload"],
+  status: ModalContent["status"] = "success"
+): ModalContent {
   return {
     type,
     title,
     description,
     payload,
     status,
+  };
+}
+
+function createExecution({
+  modal,
+  logLine,
+  status,
+  meta,
+}: {
+  modal: ModalContent | null;
+  logLine: string;
+  status?: CommandExecutionResult["status"];
+  meta?: CommandExecutionResult["meta"];
+}): CommandExecutionResult {
+  return {
+    status: status ?? modal?.status ?? "success",
+    title: modal?.title ?? logLine,
+    description: modal?.description,
+    logLine,
+    modal,
+    meta,
   };
 }
 
@@ -55,101 +77,44 @@ function matchesSlug<T extends { slug?: string; key?: string; label?: string }>(
   });
 }
 
-function canonicalize(definition: CommandDefinition, parsed: ParsedCommand) {
-  return [definition.command, parsed.argText.trim()].filter(Boolean).join(" ");
-}
-
 export function createCommandRegistry(): CommandDefinition[] {
   return [
     {
-      command: "/help",
-      description: "List commands, categories, and starter examples.",
-      aliases: ["/h"],
-      category: "Utility",
-      args: "none",
-      examples: ["/about", "/project spectra", "/skills frontend"],
-      handler: (_parsed, context) =>
-        ({
-          ...makeResult(
-            "systemMessage",
-            "Command Directory",
-            "Everything in the portfolio is discoverable through commands.",
-            {
-              message: "Available commands",
-              hint: "Type / to open the menu or run a command directly.",
-              commandGroups: makeHelpGroups(context.registry),
-              examples: ["/about", "/experience", "/project spectra", "/skills backend"],
-            },
-            "info"
-          ),
-          meta: { canonicalCommand: "/help" },
-        }) as CommandResult,
-    },
-    {
       command: "/about",
       description: "Show who Rohan is, what he studies, and what he builds.",
-      aliases: ["/bio"],
+      aliases: [],
       category: "Profile",
       args: "none",
+      showInMenu: true,
       handler: (_parsed, context) =>
-        ({
-          ...makeResult(
-            "intro",
-            "About Rohan",
-            "Profile snapshot",
-            {
-              eyebrow: "Profile",
-              heading: context.portfolio.identity.name,
-              paragraphs: [
-                context.portfolio.about.intro,
-                context.portfolio.about.studying,
-                context.portfolio.about.building,
-                context.portfolio.about.seeking,
-                context.portfolio.about.currentFocus,
-              ],
-              highlights: context.portfolio.about.highlights,
-              chips: context.portfolio.about.roles,
-            }
-          ),
+        createExecution({
+          modal: createModal("intro", "About Rohan", "Profile snapshot", {
+            eyebrow: "Profile",
+            heading: context.portfolio.identity.name,
+            paragraphs: [
+              context.portfolio.about.intro,
+              context.portfolio.about.studying,
+              context.portfolio.about.building,
+              context.portfolio.about.seeking,
+              context.portfolio.about.currentFocus,
+            ],
+            highlights: context.portfolio.about.highlights,
+            chips: context.portfolio.about.roles,
+          }),
+          logLine: "Opened /about",
           meta: { canonicalCommand: "/about" },
-        }) as CommandResult,
-    },
-    {
-      command: "/currently",
-      description: "Show what Rohan is currently building and learning.",
-      aliases: ["/now"],
-      category: "Profile",
-      args: "none",
-      handler: (_parsed, context) =>
-        ({
-          ...makeResult(
-            "intro",
-            "Currently",
-            "What is active right now",
-            {
-              eyebrow: "Current Focus",
-              heading: context.portfolio.identity.statusDetail,
-              paragraphs: [
-                context.portfolio.current.building,
-                context.portfolio.current.learning,
-                context.portfolio.current.exploring,
-              ],
-              highlights: context.portfolio.current.workingOn,
-              chips: ["Shipping", "Learning", "Exploring"],
-            }
-          ),
-          meta: { canonicalCommand: "/currently" },
-        }) as CommandResult,
+        }),
     },
     {
       command: "/experience",
       description: "Show the full experience timeline.",
-      aliases: ["/exp"],
+      aliases: [],
       category: "Work",
       args: "none",
+      showInMenu: true,
       handler: (_parsed, context) =>
-        ({
-          ...makeResult(
+        createExecution({
+          modal: createModal(
             "timeline",
             "Experience",
             "Recent roles, research, leadership, and teaching work.",
@@ -160,52 +125,32 @@ export function createCommandRegistry(): CommandDefinition[] {
               entries: context.portfolio.experience,
             }
           ),
+          logLine: "Opened /experience",
           meta: { canonicalCommand: "/experience" },
-        }) as CommandResult,
-    },
-    {
-      command: "/timeline",
-      description: "Alternate view of the experience timeline.",
-      aliases: [],
-      category: "Work",
-      args: "none",
-      handler: (_parsed, context) =>
-        ({
-          ...makeResult(
-            "timeline",
-            "Timeline",
-            "Chronological view of recent work and leadership.",
-            {
-              heading: "Career Timeline",
-              description:
-                "The same core experience feed, optimized for scanning by date and scope.",
-              entries: context.portfolio.experience,
-            }
-          ),
-          meta: { canonicalCommand: "/timeline" },
-        }) as CommandResult,
+        }),
     },
     {
       command: "/projects",
-      description: "List selected projects with stacks and detail prompts.",
-      aliases: ["/work"],
+      description: "Browse selected projects and their stacks.",
+      aliases: [],
       category: "Projects",
       args: "none",
+      showInMenu: true,
       handler: (_parsed, context) =>
-        ({
-          ...makeResult(
+        createExecution({
+          modal: createModal(
             "projectList",
             "Projects",
             "Selected builds across AI, healthcare, analytics, and product work.",
             {
               heading: "Project Directory",
-              description:
-                "Use /project [slug] for the full brief on any individual build.",
+              description: "Use /project [slug] to open a full project brief.",
               projects: context.portfolio.projects,
             }
           ),
+          logLine: "Opened /projects",
           meta: { canonicalCommand: "/projects" },
-        }) as CommandResult,
+        }),
     },
     {
       command: "/project",
@@ -213,10 +158,11 @@ export function createCommandRegistry(): CommandDefinition[] {
       aliases: ["/proj"],
       category: "Projects",
       args: "optional",
+      showInMenu: false,
       handler: (parsed, context) => {
         if (!parsed.argText) {
-          return {
-            ...makeResult(
+          return createExecution({
+            modal: createModal(
               "projectList",
               "Project Directory",
               "Choose a project slug to inspect the full breakdown.",
@@ -226,8 +172,9 @@ export function createCommandRegistry(): CommandDefinition[] {
                 projects: context.portfolio.projects,
               }
             ),
+            logLine: "Opened /project directory",
             meta: { canonicalCommand: "/project" },
-          } as CommandResult;
+          });
         }
 
         const project = matchesSlug(context.portfolio.projects, parsed.argText);
@@ -237,43 +184,30 @@ export function createCommandRegistry(): CommandDefinition[] {
             .map((item) => `/project ${item.slug}`)
             .slice(0, 4);
 
-          return {
-            ...makeResult(
-              "systemMessage",
-              "Project Not Found",
-              "That project slug does not exist in the portfolio.",
-              {
-                message: `No project matched "${parsed.argText}".`,
-                hint: "Type /project and use the menu, or inspect /projects first.",
-                suggestions: suggestions.length ? suggestions : ["/projects", "/project spectra"],
-              },
-              "error"
-            ),
+          return createExecution({
+            modal: null,
+            logLine: `Project "${parsed.argText}" not found.`,
+            status: "error",
             meta: {
               canonicalCommand: ["/project", parsed.argText.trim()].filter(Boolean).join(" "),
             },
-          } as CommandResult;
+          });
         }
 
-        return {
-          ...makeResult(
-            "projectDetail",
-            project.name,
-            project.summary,
-            {
-              project,
-            }
-          ),
+        return createExecution({
+          modal: createModal("projectDetail", project.name, project.summary, { project }),
+          logLine: `Opened /project ${project.slug}`,
           meta: { canonicalCommand: `/project ${project.slug}` },
-        } as CommandResult;
+        });
       },
     },
     {
       command: "/skills",
-      description: "Show skill groups or filter to one category.",
+      description: "Browse skill groups or filter to one category.",
       aliases: [],
       category: "Skills",
       args: "optional",
+      showInMenu: true,
       handler: (parsed, context) => {
         const normalized = parsed.argText.trim().toLowerCase();
         const selectedGroup = normalized
@@ -286,27 +220,19 @@ export function createCommandRegistry(): CommandDefinition[] {
           : null;
 
         if (normalized && !selectedGroup) {
-          return {
-            ...makeResult(
-              "systemMessage",
-              "Skill Filter Not Found",
-              "That skill group is not defined.",
-              {
-                message: `No skill group matched "${parsed.argText}".`,
-                hint: "Try languages, frontend, backend, ai-data, tools-platforms, or startup-product.",
-                suggestions: context.portfolio.skills.map((group) => `/skills ${group.key}`),
-              },
-              "error"
-            ),
+          return createExecution({
+            modal: null,
+            logLine: `Skill group "${parsed.argText}" not found.`,
+            status: "error",
             meta: {
               canonicalCommand: ["/skills", parsed.argText.trim()].filter(Boolean).join(" "),
             },
-          } as CommandResult;
+          });
         }
 
         const groups = selectedGroup ? [selectedGroup] : context.portfolio.skills;
-        return {
-          ...makeResult(
+        return createExecution({
+          modal: createModal(
             "skillsGroup",
             selectedGroup ? `${selectedGroup.label} Skills` : "Skills",
             "Grouped technical and product-facing capabilities.",
@@ -318,36 +244,32 @@ export function createCommandRegistry(): CommandDefinition[] {
               groups,
             }
           ),
+          logLine: selectedGroup ? `Opened /skills ${selectedGroup.key}` : "Opened /skills",
           meta: {
-            canonicalCommand: selectedGroup
-              ? `/skills ${selectedGroup.key}`
-              : "/skills",
+            canonicalCommand: selectedGroup ? `/skills ${selectedGroup.key}` : "/skills",
           },
-        } as CommandResult;
+        });
       },
     },
     {
       command: "/contact",
-      description: "Show contact methods and quick links.",
+      description: "Show the fastest ways to reach Rohan.",
       aliases: [],
       category: "Contact",
       args: "none",
+      showInMenu: true,
       handler: (_parsed, context) =>
-        ({
-          ...makeResult(
-            "contactPanel",
-            "Contact",
-            "Best ways to reach Rohan.",
-            {
-              heading: "Reach Out",
-              description:
-                "Email is the fastest path. GitHub, LinkedIn, and the resume are one click away.",
-              contact: context.portfolio.contact,
-              quickLinks: context.portfolio.quickLinks,
-            }
-          ),
+        createExecution({
+          modal: createModal("contactPanel", "Contact", "Best ways to reach Rohan.", {
+            heading: "Reach Out",
+            description:
+              "Email is the fastest path. GitHub, LinkedIn, and the resume are one click away.",
+            contact: context.portfolio.contact,
+            quickLinks: context.portfolio.quickLinks,
+          }),
+          logLine: "Opened /contact",
           meta: { canonicalCommand: "/contact" },
-        }) as CommandResult,
+        }),
     },
     {
       command: "/resume",
@@ -355,54 +277,93 @@ export function createCommandRegistry(): CommandDefinition[] {
       aliases: ["/cv"],
       category: "Contact",
       args: "none",
+      showInMenu: true,
       handler: (_parsed, context) =>
-        ({
-          ...makeResult(
-            "linkPanel",
-            "Resume",
-            "Resume actions",
-            {
-              heading: "Resume",
-              description:
-                "Open the current PDF in a new tab or download it directly.",
-              links: [
-                {
-                  label: "Open PDF",
-                  href: context.portfolio.contact.resume,
-                  kind: "resume",
-                },
-                {
-                  label: "Download PDF",
-                  href: context.portfolio.contact.resume,
-                  kind: "download",
-                  download: true,
-                },
-              ],
-            }
-          ),
+        createExecution({
+          modal: createModal("linkPanel", "Resume", "Resume actions", {
+            heading: "Resume",
+            description: "Open the current PDF in a new tab or download it directly.",
+            links: [
+              {
+                label: "Open PDF",
+                href: context.portfolio.contact.resume,
+                kind: "resume",
+              },
+              {
+                label: "Download PDF",
+                href: context.portfolio.contact.resume,
+                kind: "download",
+                download: true,
+              },
+            ],
+          }),
+          logLine: "Opened /resume",
           meta: { canonicalCommand: "/resume" },
-        }) as CommandResult,
+        }),
     },
     {
-      command: "/clear",
-      description: "Reset visible terminal history to the welcome state.",
-      aliases: [],
+      command: "/currently",
+      description: "Show what Rohan is building and learning right now.",
+      aliases: ["/now"],
+      category: "Profile",
+      args: "none",
+      showInMenu: true,
+      handler: (_parsed, context) =>
+        createExecution({
+          modal: createModal("intro", "Currently", "What is active right now", {
+            eyebrow: "Current Focus",
+            heading: context.portfolio.identity.statusDetail,
+            paragraphs: [
+              context.portfolio.current.building,
+              context.portfolio.current.learning,
+              context.portfolio.current.exploring,
+            ],
+            highlights: context.portfolio.current.workingOn,
+            chips: ["Shipping", "Learning", "Exploring"],
+          }),
+          logLine: "Opened /currently",
+          meta: { canonicalCommand: "/currently" },
+        }),
+    },
+    {
+      command: "/help",
+      description: "List commands and starter examples.",
+      aliases: ["/h"],
       category: "Utility",
       args: "none",
-      handler: () =>
-        ({
-          ...makeResult(
+      showInMenu: true,
+      handler: (_parsed, context) =>
+        createExecution({
+          modal: createModal(
             "systemMessage",
-            "History Cleared",
-            "Resetting visible terminal output.",
+            "Command Directory",
+            "Everything in the portfolio is discoverable through commands.",
             {
-              message: "Terminal history cleared.",
-              hint: "Type / to explore the command menu again.",
+              message: "Available commands",
+              hint: "Type / to open the command menu or run a command directly.",
+              commandGroups: makeHelpGroups(context.registry),
+              examples: ["/about", "/experience", "/project spectra", "/skills frontend"],
             },
             "info"
           ),
+          logLine: "Opened /help",
+          meta: { canonicalCommand: "/help" },
+        }),
+    },
+    {
+      command: "/clear",
+      description: "Clear recent terminal activity and close open panels.",
+      aliases: [],
+      category: "Utility",
+      args: "none",
+      showInMenu: true,
+      handler: () =>
+        createExecution({
+          modal: null,
+          logLine: "Session cleared.",
+          status: "info",
           meta: { clearHistory: true, canonicalCommand: null },
-        }) as CommandResult,
+        }),
     },
   ];
 }

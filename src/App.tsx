@@ -4,18 +4,22 @@ import {
   useEffect,
   useReducer,
   useRef,
+  useState,
 } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 import { CommandMenu } from "@/components/terminal/CommandMenu";
+import { TerminalDashboard } from "@/components/terminal/TerminalDashboard";
 import { TerminalHistory } from "@/components/terminal/TerminalHistory";
 import { TerminalInput } from "@/components/terminal/TerminalInput";
+import { TerminalModal } from "@/components/terminal/TerminalModal";
 import { portfolioData } from "@/data/portfolio";
 import {
-  createHistoryEntry,
-  createWelcomeEntry,
+  createSessionLogEntry,
   executeCommand,
   normalizeInput,
+  parseCommand,
+  resolveCommand,
 } from "@/lib/commands/execute";
 import { commandRegistry } from "@/lib/commands/registry";
 import { getSuggestions } from "@/lib/commands/suggestions";
@@ -24,41 +28,66 @@ import {
   pushCommandToUrl,
   replaceCommandInUrl,
 } from "@/lib/commands/url";
-import type { HistoryEntry, SuggestionItem } from "@/types/terminal";
+import type { ModalContent, SessionLogEntry, SuggestionItem } from "@/types/terminal";
 
-interface TerminalState {
+type AppPhase = "locked" | "booting" | "ready";
+
+interface AppState {
+  phase: AppPhase;
   input: string;
-  history: HistoryEntry[];
+  sessionLog: SessionLogEntry[];
   submittedHistory: string[];
   recallIndex: number;
   selectedSuggestionIndex: number;
   isMenuOpen: boolean;
+  activeModal: ModalContent | null;
+  bootLines: string[];
+  startupError: string | null;
 }
 
-type TerminalAction =
+type AppAction =
   | { type: "set-input"; value: string; openMenu: boolean }
   | { type: "set-menu-open"; open: boolean }
   | { type: "set-selected-suggestion"; index: number }
-  | { type: "append-entry"; entry: HistoryEntry; command: string }
-  | { type: "replace-history"; entry: HistoryEntry; command: string }
-  | { type: "clear-visible-history" }
-  | { type: "set-recall"; value: string; index: number };
+  | { type: "append-log"; entry: SessionLogEntry; command: string; modal: ModalContent | null }
+  | { type: "clear-session" }
+  | { type: "set-recall"; value: string; index: number }
+  | { type: "set-startup-error"; value: string | null }
+  | { type: "start-boot" }
+  | { type: "append-boot-line"; line: string }
+  | { type: "finish-boot" }
+  | { type: "close-modal" };
 
-const initialState: TerminalState = {
+const BOOT_LINES = [
+  "rohan",
+  "Booting rohan shell...",
+  "Loading portfolio modules",
+  "Syncing projects, experience, and contact",
+  "Ready. Type / to explore",
+];
+
+const LOCATIONS = ["Waterloo, ON", "Toronto, ON"];
+
+const initialState: AppState = {
+  phase: "locked",
   input: "",
-  history: [createWelcomeEntry()],
+  sessionLog: [],
   submittedHistory: [],
   recallIndex: -1,
   selectedSuggestionIndex: 0,
   isMenuOpen: false,
+  activeModal: null,
+  bootLines: [],
+  startupError: null,
 };
 
-function reducer(state: TerminalState, action: TerminalAction): TerminalState {
+function reducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case "set-input":
       return {
         ...state,
         input: action.value,
+        startupError: null,
         recallIndex: -1,
         isMenuOpen: action.openMenu,
         selectedSuggestionIndex: 0,
@@ -74,34 +103,27 @@ function reducer(state: TerminalState, action: TerminalAction): TerminalState {
         ...state,
         selectedSuggestionIndex: action.index,
       };
-    case "append-entry":
+    case "append-log":
       return {
         ...state,
         input: "",
         isMenuOpen: false,
         selectedSuggestionIndex: 0,
         recallIndex: -1,
-        history: [...state.history, action.entry],
+        sessionLog: [...state.sessionLog, action.entry],
         submittedHistory: [...state.submittedHistory, action.command],
+        activeModal: action.modal ?? state.activeModal,
       };
-    case "replace-history":
+    case "clear-session":
       return {
         ...state,
         input: "",
         isMenuOpen: false,
         selectedSuggestionIndex: 0,
         recallIndex: -1,
-        history: [createWelcomeEntry(), action.entry],
-        submittedHistory: [...state.submittedHistory, action.command],
-      };
-    case "clear-visible-history":
-      return {
-        ...state,
-        input: "",
-        isMenuOpen: false,
-        selectedSuggestionIndex: 0,
-        recallIndex: -1,
-        history: [createWelcomeEntry()],
+        sessionLog: [],
+        submittedHistory: [],
+        activeModal: null,
       };
     case "set-recall":
       return {
@@ -111,6 +133,39 @@ function reducer(state: TerminalState, action: TerminalAction): TerminalState {
         isMenuOpen: action.value.trimStart().startsWith("/"),
         selectedSuggestionIndex: 0,
       };
+    case "set-startup-error":
+      return {
+        ...state,
+        startupError: action.value,
+      };
+    case "start-boot":
+      return {
+        ...state,
+        phase: "booting",
+        input: "",
+        isMenuOpen: false,
+        selectedSuggestionIndex: 0,
+        recallIndex: -1,
+        startupError: null,
+        bootLines: [],
+      };
+    case "append-boot-line":
+      return {
+        ...state,
+        bootLines: [...state.bootLines, action.line],
+      };
+    case "finish-boot":
+      return {
+        ...state,
+        phase: "ready",
+        bootLines: [],
+        input: "",
+      };
+    case "close-modal":
+      return {
+        ...state,
+        activeModal: null,
+      };
     default:
       return state;
   }
@@ -118,16 +173,70 @@ function reducer(state: TerminalState, action: TerminalAction): TerminalState {
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [locationIndex, setLocationIndex] = useState(0);
+  const [typedLocation, setTypedLocation] = useState(LOCATIONS[0]);
+  const [isDeletingLocation, setIsDeletingLocation] = useState(false);
   const deferredInput = useDeferredValue(state.input);
   const historyRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const commandMenuRef = useRef<HTMLDivElement | null>(null);
   const hasHydratedRef = useRef(false);
+  const bootTimeoutsRef = useRef<number[]>([]);
+  const pendingCommandRef = useRef<string | null>(null);
 
-  const suggestions = getSuggestions(deferredInput, commandRegistry, portfolioData);
+  const suggestions =
+    state.phase === "ready"
+      ? getSuggestions(deferredInput, commandRegistry, portfolioData)
+      : [];
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    const target = LOCATIONS[locationIndex];
+
+    const timeout = window.setTimeout(() => {
+      if (!isDeletingLocation) {
+        if (typedLocation.length < target.length) {
+          setTypedLocation(target.slice(0, typedLocation.length + 1));
+          return;
+        }
+
+        setIsDeletingLocation(true);
+        return;
+      }
+
+      if (typedLocation.length > 0) {
+        setTypedLocation(target.slice(0, typedLocation.length - 1));
+        return;
+      }
+
+      setIsDeletingLocation(false);
+      setLocationIndex((current) => (current + 1) % LOCATIONS.length);
+    }, !isDeletingLocation ? (typedLocation.length === target.length ? 1100 : 65) : 35);
+
+    return () => window.clearTimeout(timeout);
+  }, [isDeletingLocation, locationIndex, typedLocation]);
+
+  useEffect(() => {
+    if (state.phase !== "booting") {
+      inputRef.current?.focus();
+    }
+  }, [state.phase]);
+
+  useEffect(() => {
+    if (!state.isMenuOpen || !commandMenuRef.current) {
+      return;
+    }
+
+    const raf = window.requestAnimationFrame(() => {
+      if (typeof commandMenuRef.current?.scrollIntoView === "function") {
+        commandMenuRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+        });
+      }
+    });
+
+    return () => window.cancelAnimationFrame(raf);
+  }, [state.isMenuOpen, suggestions.length]);
 
   useEffect(() => {
     const container = historyRef.current;
@@ -144,7 +253,7 @@ export default function App() {
     }
 
     container.scrollTop = container.scrollHeight;
-  }, [state.history]);
+  }, [state.sessionLog]);
 
   useEffect(() => {
     if (suggestions.length === 0 && state.selectedSuggestionIndex !== 0) {
@@ -155,6 +264,41 @@ export default function App() {
       dispatch({ type: "set-selected-suggestion", index: 0 });
     }
   }, [state.selectedSuggestionIndex, suggestions]);
+
+  useEffect(() => {
+    if (state.phase !== "booting") {
+      return;
+    }
+
+    bootTimeoutsRef.current.forEach((timeout) => window.clearTimeout(timeout));
+    bootTimeoutsRef.current = [];
+
+    BOOT_LINES.forEach((line, index) => {
+      const timeout = window.setTimeout(() => {
+        dispatch({ type: "append-boot-line", line });
+      }, 120 * (index + 1));
+
+      bootTimeoutsRef.current.push(timeout);
+    });
+
+    const finishTimeout = window.setTimeout(() => {
+      dispatch({ type: "finish-boot" });
+      window.requestAnimationFrame(() => inputRef.current?.focus());
+
+      const pendingCommand = pendingCommandRef.current;
+      if (pendingCommand) {
+        pendingCommandRef.current = null;
+        runCommand(pendingCommand, { urlMode: "replace" });
+      }
+    }, 120 * BOOT_LINES.length + 150);
+
+    bootTimeoutsRef.current.push(finishTimeout);
+
+    return () => {
+      bootTimeoutsRef.current.forEach((timeout) => window.clearTimeout(timeout));
+      bootTimeoutsRef.current = [];
+    };
+  }, [state.phase]);
 
   function syncUrl(command: string | null, mode: "push" | "replace" | "none") {
     if (mode === "none") {
@@ -169,42 +313,37 @@ export default function App() {
     pushCommandToUrl(command);
   }
 
+  function startBoot(pendingCommand: string | null = null) {
+    pendingCommandRef.current = pendingCommand;
+    dispatch({ type: "start-boot" });
+  }
+
   function runCommand(
     rawInput: string,
-    options: { historyMode?: "append" | "replace"; urlMode?: "push" | "replace" | "none" } = {}
+    options: { urlMode?: "push" | "replace" | "none" } = {}
   ) {
-    const { parsed, result } = executeCommand(rawInput);
+    const { result } = executeCommand(rawInput);
     const normalized = normalizeInput(rawInput);
-
-    if (!parsed) {
-      const entry = createHistoryEntry(normalized || rawInput, parsed, result);
-      startTransition(() => {
-        dispatch({ type: "append-entry", entry, command: normalized || rawInput });
-      });
-      syncUrl(result.meta?.canonicalCommand ?? null, options.urlMode ?? "push");
-      return;
-    }
 
     if (result.meta?.clearHistory) {
       startTransition(() => {
-        dispatch({ type: "clear-visible-history" });
+        dispatch({ type: "clear-session" });
       });
       syncUrl(null, options.urlMode ?? "push");
       return;
     }
 
-    const entry = createHistoryEntry(normalized, parsed, result);
-    const historyMode = options.historyMode ?? "append";
-
+    const entry = createSessionLogEntry(normalized || rawInput.trim(), result);
     startTransition(() => {
       dispatch({
-        type: historyMode === "replace" ? "replace-history" : "append-entry",
+        type: "append-log",
         entry,
-        command: normalized,
+        command: normalized || rawInput.trim(),
+        modal: result.modal,
       });
     });
 
-    syncUrl(result.meta?.canonicalCommand ?? normalized, options.urlMode ?? "push");
+    syncUrl(result.meta?.canonicalCommand ?? null, options.urlMode ?? "push");
   }
 
   function applySuggestion(item: SuggestionItem, shouldSubmit: boolean) {
@@ -263,6 +402,12 @@ export default function App() {
     });
   }
 
+  function closeModal() {
+    dispatch({ type: "close-modal" });
+    replaceCommandInUrl(null);
+    window.requestAnimationFrame(() => inputRef.current?.focus());
+  }
+
   useEffect(() => {
     if (hasHydratedRef.current) {
       return;
@@ -272,79 +417,115 @@ export default function App() {
 
     const command = getCommandFromUrl();
     if (command) {
-      runCommand(command, { historyMode: "replace", urlMode: "replace" });
+      startBoot(command);
     }
   }, []);
 
   useEffect(() => {
     function handlePopState() {
       const command = getCommandFromUrl();
+
       if (!command) {
-        dispatch({ type: "clear-visible-history" });
+        dispatch({ type: "close-modal" });
         return;
       }
 
-      runCommand(command, { historyMode: "replace", urlMode: "none" });
+      if (state.phase === "locked" || state.phase === "booting") {
+        startBoot(command);
+        return;
+      }
+
+      runCommand(command, { urlMode: "none" });
     }
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  }, [state.phase]);
+
+  const recentActivity = state.sessionLog.slice(-3).reverse();
+  const currentLocation = typedLocation || "\u00a0";
+
+  if (state.phase === "locked") {
+    return (
+      <div className="app-shell startup-shell">
+        <div className="startup-shell-inner">
+          <TerminalInput
+            value={state.input}
+            inputRef={inputRef}
+            mode="startup"
+            placeholder="Type rohan to start"
+            onChange={(value) =>
+              dispatch({
+                type: "set-input",
+                value,
+                openMenu: false,
+              })
+            }
+            onKeyDown={(event) => {
+              if (event.key !== "Enter") {
+                return;
+              }
+
+              event.preventDefault();
+
+              if (normalizeInput(state.input).toLowerCase() === "rohan") {
+                startBoot();
+                return;
+              }
+
+              if (state.input.trim()) {
+                dispatch({ type: "set-input", value: "", openMenu: false });
+                dispatch({
+                  type: "set-startup-error",
+                  value: "Unknown input. Type rohan to start.",
+                });
+              }
+            }}
+          />
+
+          {state.startupError ? <p className="startup-error">{state.startupError}</p> : null}
+        </div>
+      </div>
+    );
+  }
+
+  if (state.phase === "booting") {
+    return (
+      <div className="app-shell startup-shell">
+        <div className="boot-sequence" aria-live="polite">
+          {state.bootLines.map((line, index) => (
+            <motion.p
+              key={`${line}-${index}`}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="boot-line"
+            >
+              {line}
+            </motion.p>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-shell">
       <div className="app-frame">
         <section className="terminal-panel">
-          <div className="terminal-toolbar">
-            <div className="terminal-lights">
-              <span className="terminal-light bg-rose-400" />
-              <span className="terminal-light bg-amber-300" />
-              <span className="terminal-light bg-emerald-400" />
-            </div>
-
-            <div className="terminal-toolbar-body">
-              <div>
-                <p className="terminal-toolbar-title">{portfolioData.identity.name}</p>
-                <p className="terminal-toolbar-subtitle">
-                  {portfolioData.identity.role} · type <code>/</code> to explore
-                </p>
-              </div>
-
-              <div className="terminal-toolbar-links">
-                {portfolioData.quickLinks.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    className="terminal-toolbar-link"
-                    target={link.external ? "_blank" : undefined}
-                    rel={link.external ? "noreferrer" : undefined}
-                    download={link.download}
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-
           <div ref={historyRef} className="terminal-history">
-            <TerminalHistory history={state.history} onRunCommand={runCommand} />
+            <TerminalDashboard
+              recentActivity={recentActivity}
+              onRunCommand={runCommand}
+              currentLocation={currentLocation}
+            />
+            <TerminalHistory history={state.sessionLog} />
           </div>
 
           <div className="terminal-input-area">
-            <AnimatePresence>
-              {state.isMenuOpen ? (
-                <CommandMenu
-                  suggestions={suggestions}
-                  selectedIndex={state.selectedSuggestionIndex}
-                  onSelect={(item) => applySuggestion(item, item.submitOnSelect ?? false)}
-                />
-              ) : null}
-            </AnimatePresence>
-
             <TerminalInput
               value={state.input}
               inputRef={inputRef}
+              placeholder="Type / to explore commands"
               onChange={(value) =>
                 dispatch({
                   type: "set-input",
@@ -394,6 +575,19 @@ export default function App() {
                   event.preventDefault();
 
                   if (state.isMenuOpen && suggestions.length) {
+                    const normalized = normalizeInput(state.input);
+                    const parsed = parseCommand(state.input);
+                    const exactSuggestion = suggestions.find(
+                      (item) => item.value.toLowerCase() === normalized.toLowerCase()
+                    );
+                    const exactCommand =
+                      parsed && !parsed.argText ? resolveCommand(parsed) : null;
+
+                    if (exactSuggestion || exactCommand) {
+                      runCommand(state.input);
+                      return;
+                    }
+
                     applySuggestion(suggestions[state.selectedSuggestionIndex], true);
                     return;
                   }
@@ -419,7 +613,28 @@ export default function App() {
             />
           </div>
         </section>
+
+        <AnimatePresence>
+          {state.isMenuOpen ? (
+            <CommandMenu
+              menuRef={commandMenuRef}
+              suggestions={suggestions}
+              selectedIndex={state.selectedSuggestionIndex}
+              onSelect={(item) => applySuggestion(item, item.submitOnSelect ?? false)}
+            />
+          ) : null}
+        </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {state.activeModal ? (
+          <TerminalModal
+            content={state.activeModal}
+            onClose={closeModal}
+            onRunCommand={runCommand}
+          />
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }
