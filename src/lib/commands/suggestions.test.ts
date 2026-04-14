@@ -13,8 +13,8 @@ describe("command suggestions", () => {
       "/skills",
       "/contact",
       "/resume",
-      "/currently",
       "/help",
+      "/exit",
       "/clear",
     ]);
   });

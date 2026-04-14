@@ -35,7 +35,7 @@ function getCommandSuggestions(
       value: definition.command,
       description: definition.description,
       kind: "command" as const,
-      submitOnSelect: definition.args === "none",
+      submitOnSelect: definition.submitOnMenuSelect ?? (definition.args === "none"),
     }));
 }
 
