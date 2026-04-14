@@ -7,7 +7,7 @@ interface TerminalDashboardProps {
   currentLocation: string;
 }
 
-const starterCommands = ["/about", "/experience", "/projects", "/contact"];
+const starterCommands = ["/help"];
 
 export function TerminalDashboard({
   recentActivity,

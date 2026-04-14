@@ -69,6 +69,7 @@ export interface ExperienceEntry {
   highlights: string[];
   techUsed: string[];
   category: ExperienceCategory;
+  promotedFrom?: string;
 }
 
 export interface ProjectEntry {

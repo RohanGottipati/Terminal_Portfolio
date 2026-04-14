@@ -124,9 +124,18 @@
     overflow: hidden;
   }
 
+  .terminal-panel.is-idle {
+    min-height: 0;
+    grid-template-rows: auto auto;
+  }
+
   .terminal-history {
     overflow-y: auto;
     padding: 18px 20px 22px;
+  }
+
+  .terminal-history.is-idle {
+    overflow: visible;
   }
 
   .terminal-history::-webkit-scrollbar,
@@ -210,17 +219,19 @@
     display: grid;
     grid-template-columns: minmax(120px, 148px) minmax(0, 1fr);
     gap: 14px;
-    padding: 0;
-    border: 0;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
     background: transparent;
     color: var(--muted-strong);
     text-align: left;
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.6;
   }
 
   .dashboard-command-row:hover {
     color: var(--text);
+    border-color: var(--line-strong);
+    background: var(--accent-soft);
   }
 
   .dashboard-command-row span:first-child,
@@ -446,6 +457,39 @@
     border-bottom: 1px solid var(--line);
   }
 
+  .modal-title-block {
+    min-width: 0;
+  }
+
+  .modal-header-controls {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .modal-header-link-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .modal-header-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-size: 0.86rem;
+    white-space: nowrap;
+  }
+
+  .modal-header-link:hover {
+    border-color: var(--line-strong);
+    background: var(--accent-soft);
+  }
+
   .modal-kicker {
     margin: 0 0 6px;
     color: var(--accent);
@@ -490,7 +534,7 @@
 
   .panel-stack {
     display: grid;
-    gap: 18px;
+    gap: 16px;
   }
 
   .panel-eyebrow,
@@ -500,6 +544,13 @@
     font-size: 0.86rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+  }
+
+  .panel-heading {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.1rem;
+    font-weight: 600;
   }
 
   .panel-copy,
@@ -516,10 +567,29 @@
     color: var(--text);
   }
 
+  .panel-role-list {
+    display: grid;
+    gap: 6px;
+  }
+
+  .panel-role-list p {
+    margin: 0;
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
   .panel-muted-copy,
   .panel-timeline-entry p,
   .panel-project-row p {
     color: var(--muted-strong);
+  }
+
+  .panel-stack-tight,
+  .panel-section-stack {
+    display: grid;
+    gap: 14px;
   }
 
   .panel-grid,
@@ -531,10 +601,15 @@
 
   .panel-mini-card {
     display: grid;
-    gap: 14px;
-    padding: 16px;
+    gap: 12px;
+    padding: 14px;
     border: 1px solid var(--line);
     background: rgba(255, 255, 255, 0.01);
+  }
+
+  .panel-mini-card-centered {
+    justify-items: center;
+    text-align: center;
   }
 
   .panel-chip-row,
@@ -542,6 +617,10 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+  }
+
+  .panel-link-row-centered {
+    justify-content: center;
   }
 
   .panel-chip {
@@ -567,9 +646,21 @@
     display: grid;
     gap: 10px;
     margin: 0;
-    padding-left: 18px;
+    padding-left: 0;
+    list-style: none;
     color: var(--muted-strong);
     line-height: 1.65;
+  }
+
+  .panel-skill-line {
+    margin: 0;
+    color: var(--muted-strong);
+    line-height: 1.8;
+  }
+
+  .panel-skill-line span:first-child {
+    color: var(--text);
+    font-weight: 600;
   }
 
   .panel-timeline {
@@ -579,9 +670,50 @@
 
   .panel-timeline-entry {
     display: grid;
-    gap: 14px;
-    padding: 16px;
+    gap: 12px;
+    padding: 14px;
     border: 1px solid var(--line);
+  }
+
+  .panel-promotion-group {
+    border: 1px solid var(--line);
+  }
+
+  .panel-promotion-group-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .panel-promotion-org {
+    color: var(--text);
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .panel-promotion-group-entries {
+    display: grid;
+    grid-template-columns: 3px minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .panel-promotion-track {
+    background: #4ade80;
+    border-radius: 2px;
+    margin: 8px 0 8px 14px;
+  }
+
+  .panel-promotion-group-stack {
+    display: grid;
+    gap: 0;
+  }
+
+  .panel-promotion-group-stack .panel-timeline-entry {
+    border: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .panel-promotion-group-stack .panel-timeline-entry:last-child {
+    border-bottom: 0;
   }
 
   .panel-timeline-head {
@@ -620,9 +752,9 @@
   .panel-project-row,
   .panel-command-row {
     display: grid;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
-    padding: 16px;
+    padding: 14px;
     border: 1px solid var(--line);
     background: transparent;
     text-align: left;
@@ -639,6 +771,27 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+  }
+
+  .panel-detail-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .panel-detail-item {
+    display: grid;
+    gap: 6px;
+    min-width: 180px;
+  }
+
+  .panel-detail-item p:last-child {
+    margin: 0;
+    color: var(--muted-strong);
+    line-height: 1.6;
   }
 
   .panel-project-slug,
@@ -658,6 +811,22 @@
     line-height: 1.6;
   }
 
+  .panel-inline-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #9ab7e8;
+    font-size: 0.92rem;
+  }
+
+  .panel-inline-action:hover {
+    color: var(--text);
+  }
+
   .panel-link-button {
     display: inline-flex;
     align-items: center;
@@ -672,6 +841,21 @@
   .panel-link-button:hover {
     border-color: var(--line-strong);
     background: var(--accent-soft);
+  }
+
+  .panel-resume-preview-shell {
+    border: 1px solid var(--line);
+    background: #0a0e14;
+    height: min(62vh, 720px);
+    overflow: hidden;
+  }
+
+  .panel-resume-preview {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #fff;
   }
 }
 
@@ -716,6 +900,20 @@
     justify-items: start;
     text-align: left;
   }
+
+  .modal-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .modal-header-controls {
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-header-link-row {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 640px) {
@@ -740,5 +938,9 @@
   .modal-panel {
     width: 100%;
     max-height: calc(100vh - 20px);
+  }
+
+  .panel-resume-preview-shell {
+    height: min(56vh, 620px);
   }
 }

@@ -47,17 +47,23 @@ export function TerminalModal({
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="modal-header">
-          <div>
+          <div className="modal-title-block">
             <p className="modal-kicker">rohan shell</p>
             <h2 className="modal-title">{content.title}</h2>
             {content.description ? (
               <p className="modal-description">{content.description}</p>
             ) : null}
           </div>
-
-          <button type="button" className="modal-close" onClick={onClose} aria-label="Close panel">
-            <X size={16} />
-          </button>
+          <div className="modal-header-controls">
+            <button
+              type="button"
+              className="modal-close"
+              onClick={onClose}
+              aria-label="Close panel"
+            >
+              <X size={16} />
+            </button>
+          </div>
         </header>
 
         <div className="modal-body">

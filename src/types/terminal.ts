@@ -23,7 +23,8 @@ export type ModalType =
   | "skillsGroup"
   | "contactPanel"
   | "systemMessage"
-  | "linkPanel";
+  | "linkPanel"
+  | "resumePanel";
 
 export type CommandStatus = "success" | "error" | "info";
 
@@ -38,25 +39,28 @@ export interface ParsedCommand {
 export interface CommandMeta {
   clearHistory?: boolean;
   canonicalCommand?: string | null;
+  endSession?: boolean;
+  exitAfterMs?: number;
 }
 
 export interface IntroPayload {
   eyebrow?: string;
-  heading: string;
+  heading?: string;
   paragraphs: string[];
+  roleLines?: string[];
   highlights?: string[];
   chips?: string[];
 }
 
 export interface TimelinePayload {
   heading: string;
-  description: string;
+  description?: string;
   entries: ExperienceEntry[];
 }
 
 export interface ProjectListPayload {
   heading: string;
-  description: string;
+  description?: string;
   projects: ProjectEntry[];
 }
 
@@ -66,7 +70,7 @@ export interface ProjectDetailPayload {
 
 export interface SkillsPayload {
   heading: string;
-  description: string;
+  description?: string;
   groups: SkillGroup[];
 }
 
@@ -82,10 +86,16 @@ export interface LinkPanelPayload {
   description: string;
   links: PortfolioLink[];
 }
+export interface ResumePanelPayload {
+  heading: string;
+  description?: string;
+  resumeHref: string;
+  links: PortfolioLink[];
+}
 
-export interface HelpGroup {
-  label: CommandCategory;
-  items: Array<{ command: string; description: string }>;
+export interface CommandListItem {
+  command: string;
+  description: string;
 }
 
 export interface SystemMessagePayload {
@@ -93,7 +103,7 @@ export interface SystemMessagePayload {
   hint?: string;
   examples?: string[];
   suggestions?: string[];
-  commandGroups?: HelpGroup[];
+  commands?: CommandListItem[];
 }
 
 export type ModalPayload =
@@ -104,6 +114,7 @@ export type ModalPayload =
   | SkillsPayload
   | ContactPayload
   | LinkPanelPayload
+  | ResumePanelPayload
   | SystemMessagePayload;
 
 export interface ModalContent {
@@ -152,6 +163,7 @@ export interface CommandDefinition {
   category: CommandCategory;
   args: "none" | "optional" | "required";
   showInMenu?: boolean;
+  submitOnMenuSelect?: boolean;
   examples?: string[];
   handler: (parsed: ParsedCommand, context: CommandContext) => CommandExecutionResult;
 }

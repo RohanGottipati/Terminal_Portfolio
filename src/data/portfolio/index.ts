@@ -4,31 +4,25 @@ export const portfolioData: PortfolioData = {
   identity: {
     name: "Rohan Gottipati",
     shortName: "Rohan",
-    role: "Software Engineer",
+    role: "Product Software Developer",
     subtitle: "Interactive portfolio",
     handle: "rohangottipati",
     avatar: "/rohan.jpg",
-    tagline: "Developer-tool inspired portfolio for builders, founders, and recruiters.",
+    tagline: "Terminal-style portfolio for recruiters, founders, and engineering teams.",
     statusLabel: "Currently building",
-    statusDetail: "Clinician tooling, product demos, and research systems",
+    statusDetail: "Full-stack software, data, and AI workflow delivery",
     location: "Waterloo, ON",
   },
   about: {
-    intro:
-      "Computer Science student at Wilfrid Laurier University focused on software engineering, data systems, and AI product development.",
-    studying:
-      "Bachelor of Computer Science with a Big Data Systems concentration and a Data Analytics option.",
-    building:
-      "Product-minded software across healthcare, analytics, AI, and startup environments with an emphasis on polished execution.",
-    seeking:
-      "Software engineering, data systems, and machine learning work where product quality and iteration speed both matter.",
-    currentFocus:
-      "Shipping demos, clinician-facing tools, and research infrastructure while getting sharper on backend architecture and full-stack systems design.",
-    roles: ["Software Engineer", "Builder", "Data Systems", "AI Product"],
+    intro: "",
+    studying: "Bachelor of Computer Science, Big Data Concentration at Wilfrid Laurier University.",
+    building: "",
+    seeking: "",
+    currentFocus: "",
+    roles: [],
     highlights: [
       "Software Developer Intern at DOUBL and OneChart",
       "AI/ML Research Assistant at Wilfrid Laurier University",
-      "Built products spanning healthcare, education, data analysis, and developer experiences",
       "Interested in software engineering, data systems, and machine learning",
     ],
   },
@@ -47,17 +41,31 @@ export const portfolioData: PortfolioData = {
   },
   experience: [
     {
+      slug: "doubl-junior-software-developer",
+      title: "Junior Software Developer",
+      organization: "DOUBL",
+      dateRange: "Apr 2026 – Present",
+      summary:
+        "Promoted from Software Developer Intern to Junior Software Developer.",
+      highlights: [
+        "Summer 2026",
+      ],
+      techUsed: ["Next.js", "TypeScript", "Firebase", "Resend API"],
+      category: "work",
+      promotedFrom: "Software Developer Intern",
+    },
+    {
       slug: "doubl-software-developer-intern",
       title: "Software Developer Intern",
       organization: "DOUBL",
-      dateRange: "Jan 2026 – Present",
+      dateRange: "Jan 2026 – Apr 2026",
       summary:
-        "Built polished interactive integrations and internal tooling to accelerate client demos and content operations.",
+        "Delivered interactive product and growth tooling across demos, messaging reliability, and content operations.",
       highlights: [
-        "Developed interactive product integrations with Next.js and TypeScript",
-        "Reduced spam email noise by 95% through stricter rate limiting and route authentication",
-        "Added Firebase-backed CMS flows for text and image editing",
-        "Automated body-scan notification workflows for 500+ user accounts",
+        "Accelerated client acquisition demos by developing polished interactive integrations using Next.js and TypeScript.",
+        "Reduced spam emails by 95% by implementing strict rate limiting and route authentication using Resend API.",
+        "Implemented website content management by adding an admin-based Firebase CMS for text and image editing.",
+        "Expedited body scan email delivery time by 85% by automating user notification scripts for 500+ user accounts.",
       ],
       techUsed: ["Next.js", "TypeScript", "Firebase", "Resend API"],
       category: "work",
@@ -68,12 +76,12 @@ export const portfolioData: PortfolioData = {
       organization: "OneChart",
       dateRange: "Jan 2026 – Present",
       summary:
-        "Built production-ready clinician tooling spanning a web app, Chrome extension, transcription workflows, and structured PDF delivery.",
+        "Built production-ready clinician tooling spanning Scribe workflows, extension UX, transcription, and structured clinical delivery.",
       highlights: [
-        "Shipped the Scribe platform and Chrome extension using TypeScript and React",
-        "Reduced documentation time by 80% with Deepgram and Gemini integrations",
-        "Implemented structured PDF generation on a Supabase-backed workflow",
-        "Improved data retrieval speed by 60% through schema and API optimization",
+        "Built production-ready Scribe platform and Chrome extension for clinicians using TypeScript and React.",
+        "Reduced documentation time by 80% by integrating Deepgram and Gemini APIs for real-time transcription.",
+        "Enabled seamless cross-platform EMR syncing by implementing structured PDF generation with Supabase backend.",
+        "Improved data retrieval speed by 60% by architecting optimized, indexed database schemas and API endpoints.",
       ],
       techUsed: ["TypeScript", "React", "Deepgram", "Gemini", "Supabase"],
       category: "work",
@@ -84,12 +92,12 @@ export const portfolioData: PortfolioData = {
       organization: "Wilfrid Laurier University",
       dateRange: "Jan 2026 – Present",
       summary:
-        "Developed reproducible data pipelines and simulation environments for affective-computing research tied to trading behavior.",
+        "Built research infrastructure for affective computing models applied to emotion-driven trading strategies.",
       highlights: [
-        "Processed 10K+ labeled sentiment data points with Python and NLP workflows",
-        "Built simulation environments to test 10+ agent strategies",
-        "Created repeatable experiment scripts and research visualizations",
-        "Supported an active research paper for publication",
+        "Built scalable data pipelines to evaluate affective computing models applied to emotion-driven trading strategies.",
+        "Processed 10K+ labeled sentiment data points by building emotion detection pipelines using Python and NLP.",
+        "Engineered simulation environments testing 10+ agent strategies against emotion-weighted performance metrics.",
+        "Developed reproducible experiment scripts and visualizations supporting an active research paper for publication.",
       ],
       techUsed: ["Python", "NLP", "Data Pipelines", "Experimentation"],
       category: "research",
@@ -100,13 +108,14 @@ export const portfolioData: PortfolioData = {
       organization: "Laurier Computing Society",
       dateRange: "Jan 2026 – Present",
       summary:
-        "Owns the society budget, sponsorship tracking, and expense reporting for student programming and events.",
+        "Lead annual financial planning and reporting for Laurier Computing Society events and operations.",
       highlights: [
-        "Managed annual budget planning and financial allocations",
-        "Tracked sponsorships, reimbursements, and event expenses",
+        "Manage annual budget and oversee financial allocations, ensuring fiscal responsibility.",
+        "Track sponsorships, reimbursements, and event expenses through organized financial reporting systems.",
       ],
       techUsed: ["Financial Reporting", "Operations", "Leadership"],
       category: "leadership",
+      promotedFrom: "Finance Coordinator",
     },
     {
       slug: "laurier-computing-society-finance-coordinator",
@@ -114,10 +123,10 @@ export const portfolioData: PortfolioData = {
       organization: "Laurier Computing Society",
       dateRange: "Sep 2025 – Jan 2026",
       summary:
-        "Supported the club's financial operations, reimbursements, and budget reporting before stepping into the VP role.",
+        "Supported financial operations and reimbursement workflows before transitioning into the VP of Finance role.",
       highlights: [
-        "Helped manage operational expenses for events and club activity",
-        "Assisted with reimbursement workflows and budget reporting",
+        "Assisted in managing the club's financial operations and tracking expenses for various events.",
+        "Supported the VP of Finance in preparing budget reports and processing reimbursement requests.",
       ],
       techUsed: ["Operations", "Budgeting", "Leadership"],
       category: "leadership",
@@ -128,12 +137,12 @@ export const portfolioData: PortfolioData = {
       organization: "TeachTrack AI",
       dateRange: "Jan 2025 – Jan 2026",
       summary:
-        "Co-built an AI EdTech platform focused on identifying student learning gaps and generating actionable performance reporting.",
+        "Co-founded and engineered an AI EdTech platform focused on identifying student learning gaps.",
       highlights: [
-        "Built the platform with Python, Flask, React, Pandas, and SQL",
-        "Automated assessments and reporting workflows, cutting effort by 40%",
-        "Created interactive dashboards that increased weekly teacher usage",
-        "Used Git workflows, unit tests, and code reviews to keep the codebase maintainable",
+        "Developed an AI EdTech startup platform using Python, Flask, and React to identify student learning gaps.",
+        "Built data pipelines with Pandas + SQL to automate assessments and generate reports, cutting effort by 40%.",
+        "Created interactive dashboards using Chart.js + React to track performance, increasing weekly teacher use.",
+        "Integrated Git version control, unit testing, and code reviews to ensure maintainable and scalable development.",
       ],
       techUsed: ["Python", "Flask", "React", "Pandas", "SQL"],
       category: "founder",
@@ -144,12 +153,12 @@ export const portfolioData: PortfolioData = {
       organization: "AvertoAI",
       dateRange: "May 2025 – Dec 2025",
       summary:
-        "Built an early-stage purchasing-data MVP with Python, FastAPI, and SQL to improve supplier decision-making and validation quality.",
+        "Built an early-stage purchasing-data MVP with Python, FastAPI, and SQL to improve supplier operations.",
       highlights: [
-        "Developed an MVP that reduced excess orders by 25%",
-        "Implemented REST APIs and normalized schemas for supplier records",
-        "Optimized query performance with indexing strategies",
-        "Improved supplier-data accuracy by 30% with automated validation pipelines",
+        "Developed an MVP with Python, FastAPI, and SQL to process purchasing data, reducing excess orders by 25%.",
+        "Implemented RESTful APIs and normalized SQL schemas to manage supplier records across multiple data sources.",
+        "Optimized queries with indexing strategies, cutting average API response latency and improving system stability.",
+        "Enhanced data accuracy by 30% by implementing multi-stage automated validation pipelines for supplier data.",
       ],
       techUsed: ["Python", "FastAPI", "SQL", "REST APIs"],
       category: "work",
@@ -160,11 +169,11 @@ export const portfolioData: PortfolioData = {
       organization: "DMZ",
       dateRange: "May 2025 – Aug 2025",
       summary:
-        "Refined the TeachTrack AI prototype through faster iteration, stronger demos, and mentor feedback in a startup accelerator setting.",
+        "Refined the TeachTrack AI prototype through high-speed iteration, technical demos, and mentor feedback.",
       highlights: [
-        "Improved prototype scalability and validation speed by 60%",
-        "Built interactive demos with React and streamlined APIs",
-        "Presented technical demos to mentors and investors",
+        "Developed and refined the TeachTrack AI prototype, enhancing scalability and validation speed by 60%.",
+        "Built interactive web demos using React and streamlined REST APIs, accelerating iteration cycles.",
+        "Presented polished technical demos to mentors and investors, refining MVP architecture through live feedback.",
       ],
       techUsed: ["React", "REST APIs", "MVP Iteration", "Pitching"],
       category: "founder",
@@ -175,11 +184,11 @@ export const portfolioData: PortfolioData = {
       organization: "Varsity Tutors",
       dateRange: "Nov 2024 – Dec 2025",
       summary:
-        "Taught core CS topics from Python and Java fundamentals to data structures, algorithms, and debugging.",
+        "Taught core computer science topics through individual and group instruction focused on practical problem solving.",
       highlights: [
-        "Taught individual and group sessions covering Python, Java, OOP, and DSA",
-        "Created custom exercises for arrays, linked lists, stacks, queues, and trees",
-        "Walked students through debugging, recursion traces, and time complexity",
+        "Taught Python, Java, OOP, data structures and algorithms to individual and group classes of 10+ students.",
+        "Developed custom coding exercises and implementations for arrays, linked lists, stacks, queues, and trees.",
+        "Walked through debugging, recursion traces, and time complexity concepts to strengthen problem solving.",
       ],
       techUsed: ["Python", "Java", "Data Structures", "Teaching"],
       category: "teaching",
@@ -193,7 +202,7 @@ export const portfolioData: PortfolioData = {
         "Security-focused analytics layer for AI agents operating on the Solana blockchain.",
       description:
         "Spectra is a real-time behavioral classification and analytics platform built to act as a security layer for Solana-based AI agents. The project focuses on monitoring behavior, surfacing suspicious patterns, and packaging those signals into an operator-friendly analytics experience.",
-      stack: ["Solana", "AI Agents", "Analytics"],
+      stack: ["Next.js", "React", "TypeScript", "Solana Web3.js", "Supabase"],
       features: [
         "Tracks real-time agent behavior across blockchain activity",
         "Classifies suspicious or risky behavioral patterns",
@@ -223,7 +232,7 @@ export const portfolioData: PortfolioData = {
         "AI-powered care coordination workflow for PSWs, family members, and care coordinators.",
       description:
         "CareSync is a healthcare coordination experience designed to streamline communication between support workers, families, and care coordinators. The product centers on clearer updates, shared context, and faster coordination around day-to-day care workflows.",
-      stack: ["AI", "Healthcare", "React"],
+      stack: ["React", "Node.js", "PostgreSQL", "Auth0", "Backboard.io", "Vultr"],
       features: [
         "Organizes care updates for multiple stakeholder types",
         "Improves communication around ongoing patient support",
@@ -253,7 +262,7 @@ export const portfolioData: PortfolioData = {
         "Olympic athlete analysis in R focused on medal outcomes and performance drivers.",
       description:
         "Medalyze explores Olympic athlete data to uncover how age, physical attributes, and event-level factors influence performance and medal outcomes. The project emphasizes statistical modeling, data cleaning, and analytical storytelling in R.",
-      stack: ["R", "Data Analysis", "Statistical Modeling"],
+      stack: ["R", "Tidyverse", "Tidymodels", "ggplot2"],
       features: [
         "Analyzes athlete attributes against medal outcomes",
         "Explores event-level variables influencing performance",
@@ -301,7 +310,7 @@ export const portfolioData: PortfolioData = {
         "Wearable-sensor ML system for classifying barbell exercises with 89.5% accuracy.",
       description:
         "MoveMind is a machine learning system that classifies barbell exercises such as bench press, squat, and deadlift using wearable sensor data. The project combines data processing, model evaluation, and user-facing presentation for fitness-focused insights.",
-      stack: ["Machine Learning", "Sensor Data", "Classification"],
+      stack: ["Python", "scikit-learn", "Pandas"],
       features: [
         "Classifies multiple barbell movements from wearable inputs",
         "Reached 89.5% accuracy on the modeled exercise set",
@@ -372,50 +381,29 @@ export const portfolioData: PortfolioData = {
     {
       key: "languages",
       label: "Languages",
-      summary: "Core languages used across product, data, and academic work.",
-      items: ["Python", "TypeScript", "JavaScript", "Java", "R", "C", "SQL"],
+      summary: "Programming and markup languages.",
+      items: ["Python", "Java", "R", "C", "SQL", "TypeScript", "JavaScript", "HTML", "CSS"],
     },
     {
       key: "frontend",
-      label: "Frontend",
-      summary: "Interfaces with a strong emphasis on responsiveness and polish.",
-      items: ["React", "Vite", "Tailwind CSS", "HTML", "CSS", "Framer Motion"],
-    },
-    {
-      key: "backend",
-      label: "Backend",
-      summary: "APIs, data workflows, and product infrastructure.",
-      items: ["Node.js", "Flask", "FastAPI", "REST APIs", "Supabase", "Firebase"],
-    },
-    {
-      key: "ai-data",
-      label: "AI / Data",
-      summary: "Applied AI and analytics workflows used in products and research.",
-      items: [
-        "OpenAI API",
-        "NLP",
-        "Machine Learning",
-        "Pandas",
-        "NumPy",
-        "Jupyter Notebook",
-      ],
+      label: "Frameworks & Libraries",
+      summary: "Core frameworks, libraries, and data tooling.",
+      items: ["React", "Next.js", "FastAPI", "pandas", "NumPy", "scikit-learn", "ggplot2", "Tailwind CSS"],
     },
     {
       key: "tools-platforms",
-      label: "Tools / Platforms",
-      summary: "Collaboration, deployment, and workflow tooling.",
-      items: ["Git", "GitHub", "Docker", "Figma", "Vercel", "Chrome Extensions"],
-    },
-    {
-      key: "startup-product",
-      label: "Startup / Product",
-      summary: "Execution strengths beyond pure implementation.",
+      label: "Tools & Technologies",
+      summary: "Infrastructure, APIs, and deployment tools.",
       items: [
-        "MVP Prototyping",
-        "Technical Demos",
-        "Product Iteration",
-        "Experiment Design",
-        "Stakeholder Communication",
+        "REST APIs",
+        "Node.js",
+        "PostgreSQL",
+        "Firebase",
+        "Supabase",
+        "Gemini API",
+        "Docker",
+        "Git",
+        "Vercel",
       ],
     },
   ],

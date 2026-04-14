@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  ArrowLeft,
   ArrowUpRight,
   CheckCircle2,
   Copy,
@@ -18,6 +19,7 @@ import type {
   ModalContent,
   ProjectDetailPayload,
   ProjectListPayload,
+  ResumePanelPayload,
   SkillsPayload,
   SystemMessagePayload,
   TimelinePayload,
@@ -47,8 +49,17 @@ function IntroRenderer({ payload }: { payload: IntroPayload }) {
   return (
     <div className="panel-stack">
       {payload.eyebrow ? <p className="panel-eyebrow">{payload.eyebrow}</p> : null}
+      {payload.heading ? <p className="panel-heading">{payload.heading}</p> : null}
 
-      {payload.chips?.length ? (
+      {payload.roleLines?.length ? (
+        <div className="panel-role-list">
+          {payload.roleLines.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </div>
+      ) : null}
+
+      {payload.chips?.length && !payload.roleLines?.length ? (
         <div className="panel-chip-row">
           {payload.chips.map((chip) => (
             <span key={chip} className="panel-chip">
@@ -69,7 +80,7 @@ function IntroRenderer({ payload }: { payload: IntroPayload }) {
           <p className="panel-section-label">Highlights</p>
           <ul className="panel-bullet-list">
             {payload.highlights.map((highlight) => (
-              <li key={highlight}>{highlight}</li>
+              <li key={highlight}>{`- ${highlight}`}</li>
             ))}
           </ul>
         </div>
@@ -78,42 +89,73 @@ function IntroRenderer({ payload }: { payload: IntroPayload }) {
   );
 }
 
+function TimelineEntry({
+  entry,
+  hideOrg,
+}: {
+  entry: TimelinePayload["entries"][number];
+  hideOrg?: boolean;
+}) {
+  return (
+    <article className="panel-timeline-entry">
+      <div className="panel-timeline-head">
+        <div>
+          <h3>{entry.title}</h3>
+          {!hideOrg ? <p>{entry.organization}</p> : null}
+        </div>
+        <div className="panel-timeline-meta">
+          <span>{entry.dateRange}</span>
+          {entry.location ? <span>{entry.location}</span> : null}
+        </div>
+      </div>
+
+      <ul className="panel-bullet-list">
+        {entry.highlights.map((highlight) => (
+          <li key={highlight}>{`- ${highlight}`}</li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
 function TimelineRenderer({ payload }: { payload: TimelinePayload }) {
+  const rendered = new Set<number>();
+
   return (
     <div className="panel-stack">
-      <p className="panel-muted-copy">{payload.description}</p>
+      {payload.description ? <p className="panel-muted-copy">{payload.description}</p> : null}
 
       <div className="panel-timeline">
-        {payload.entries.map((entry) => (
-          <article key={entry.slug} className="panel-timeline-entry">
-            <div className="panel-timeline-head">
-              <div>
-                <h3>{entry.title}</h3>
-                <p>{entry.organization}</p>
+        {payload.entries.map((entry, index) => {
+          if (rendered.has(index)) return null;
+
+          const nextEntry = payload.entries[index + 1];
+          const isPromotionGroup =
+            entry.promotedFrom &&
+            nextEntry &&
+            nextEntry.organization === entry.organization;
+
+          if (isPromotionGroup) {
+            rendered.add(index + 1);
+
+            return (
+              <div key={entry.slug} className="panel-promotion-group">
+                <div className="panel-promotion-group-header">
+                  <span className="panel-promotion-org">{entry.organization}</span>
+                </div>
+                <div className="panel-promotion-group-entries">
+                  <div className="panel-promotion-track" />
+                  <div className="panel-promotion-group-stack">
+                    <TimelineEntry entry={entry} hideOrg />
+                    <TimelineEntry entry={nextEntry} hideOrg />
+                  </div>
+                </div>
               </div>
-              <div className="panel-timeline-meta">
-                <span>{entry.dateRange}</span>
-                {entry.location ? <span>{entry.location}</span> : null}
-              </div>
-            </div>
+            );
+          }
 
-            <p className="panel-copy">{entry.summary}</p>
-
-            <ul className="panel-bullet-list">
-              {entry.highlights.map((highlight) => (
-                <li key={highlight}>{highlight}</li>
-              ))}
-            </ul>
-
-            <div className="panel-chip-row">
-              {entry.techUsed.map((item) => (
-                <span key={item} className="panel-chip panel-chip-muted">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </article>
-        ))}
+          return <TimelineEntry key={entry.slug} entry={entry} />;
+        })}
       </div>
     </div>
   );
@@ -128,7 +170,7 @@ function ProjectListRenderer({
 }) {
   return (
     <div className="panel-stack">
-      <p className="panel-muted-copy">{payload.description}</p>
+      {payload.description ? <p className="panel-muted-copy">{payload.description}</p> : null}
 
       <div className="panel-project-list">
         {payload.projects.map((project) => (
@@ -143,13 +185,6 @@ function ProjectListRenderer({
               <span className="panel-project-slug">/project {project.slug}</span>
             </div>
             <p>{project.summary}</p>
-            <div className="panel-chip-row">
-              {project.stack.map((item) => (
-                <span key={item} className="panel-chip panel-chip-muted">
-                  {item}
-                </span>
-              ))}
-            </div>
           </button>
         ))}
       </div>
@@ -157,64 +192,81 @@ function ProjectListRenderer({
   );
 }
 
-function ProjectDetailRenderer({ payload }: { payload: ProjectDetailPayload }) {
+function ProjectDetailRenderer({
+  payload,
+  onRunCommand,
+}: {
+  payload: ProjectDetailPayload;
+  onRunCommand: (command: string) => void;
+}) {
   const { project } = payload;
 
   return (
-    <div className="panel-stack">
-      <div className="panel-meta-grid">
-        <div>
-          <p className="panel-eyebrow">Project Brief</p>
-          <p className="panel-copy">{project.description}</p>
-        </div>
-        <div className="panel-mini-card">
-          <p className="panel-section-label">Role</p>
-          <p>{project.role}</p>
-          {project.impact ? <p className="panel-muted-copy">{project.impact}</p> : null}
-        </div>
-      </div>
+    <div className="panel-stack panel-stack-tight">
+      <button
+        type="button"
+        className="panel-inline-action"
+        onClick={() => onRunCommand("/projects")}
+      >
+        <ArrowLeft size={14} />
+        <span>Back to /projects</span>
+      </button>
 
-      <div className="panel-grid">
-        <section className="panel-mini-card">
-          <p className="panel-section-label">Features</p>
-          <ul className="panel-bullet-list">
-            {project.features.map((feature) => (
-              <li key={feature}>{feature}</li>
-            ))}
-          </ul>
-        </section>
+      <p className="panel-muted-copy">{project.summary}</p>
 
-        <section className="panel-mini-card">
-          <p className="panel-section-label">Stack</p>
-          <div className="panel-chip-row">
-            {project.stack.map((item) => (
-              <span key={item} className="panel-chip panel-chip-muted">
-                {item}
-              </span>
-            ))}
+      {project.impact ? (
+        <div className="panel-detail-strip">
+          <div className="panel-detail-item">
+            <p className="panel-section-label">Impact</p>
+            <p>{project.impact}</p>
+          </div>
+        </div>
+      ) : null}
+
+      <section className="panel-section-stack">
+        <p className="panel-section-label">Features</p>
+        <ul className="panel-bullet-list">
+          {project.features.map((feature) => (
+            <li key={feature}>{`- ${feature}`}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="panel-section-stack">
+        <p className="panel-section-label">Stack</p>
+        <div className="panel-chip-row">
+          {project.stack.map((item) => (
+            <span key={item} className="panel-chip panel-chip-muted">
+              {item}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {project.links.length ? (
+        <section className="panel-section-stack">
+          <p className="panel-section-label">Links</p>
+          <div className="panel-link-row">
+            {project.links.map((link) => {
+              const Icon = linkIcon(link.kind);
+
+              return (
+                <a
+                  key={`${project.slug}-${link.label}`}
+                  href={link.href}
+                  className="panel-link-button"
+                  target={link.external ? "_blank" : undefined}
+                  rel={link.external ? "noreferrer" : undefined}
+                >
+                  <Icon size={15} />
+                  <span>{link.label}</span>
+                  <ArrowUpRight size={14} />
+                </a>
+              );
+            })}
           </div>
         </section>
-      </div>
-
-      <div className="panel-link-row">
-        {project.links.map((link) => {
-          const Icon = linkIcon(link.kind);
-
-          return (
-            <a
-              key={`${project.slug}-${link.label}`}
-              href={link.href}
-              className="panel-link-button"
-              target={link.external ? "_blank" : undefined}
-              rel={link.external ? "noreferrer" : undefined}
-            >
-              <Icon size={15} />
-              <span>{link.label}</span>
-              <ArrowUpRight size={14} />
-            </a>
-          );
-        })}
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -222,28 +274,25 @@ function ProjectDetailRenderer({ payload }: { payload: ProjectDetailPayload }) {
 function SkillsRenderer({ payload }: { payload: SkillsPayload }) {
   return (
     <div className="panel-stack">
-      <p className="panel-muted-copy">{payload.description}</p>
-
-      <div className="panel-grid">
+      <div className="panel-stack">
         {payload.groups.map((group) => (
-          <section key={group.key} className="panel-mini-card">
-            <p className="panel-section-label">{group.label}</p>
-            <p className="panel-muted-copy">{group.summary}</p>
-            <div className="panel-chip-row">
-              {group.items.map((item) => (
-                <span key={item} className="panel-chip panel-chip-muted">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </section>
+          <p key={group.key} className="panel-skill-line">
+            <span>{`${group.label}:`}</span>{" "}
+            <span>{group.items.join(", ")}</span>
+          </p>
         ))}
       </div>
     </div>
   );
 }
 
-function ContactRenderer({ payload }: { payload: ContactPayload }) {
+function ContactRenderer({
+  payload,
+  onRunCommand,
+}: {
+  payload: ContactPayload;
+  onRunCommand: (command: string) => void;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function copyEmail() {
@@ -258,9 +307,9 @@ function ContactRenderer({ payload }: { payload: ContactPayload }) {
 
   return (
     <div className="panel-stack">
-      <div className="panel-mini-card">
+      <div className="panel-mini-card panel-mini-card-centered">
         <p className="panel-section-label">Email</p>
-        <div className="panel-link-row">
+        <div className="panel-link-row panel-link-row-centered">
           <a href={`mailto:${payload.contact.email}`} className="panel-link-button">
             <Mail size={15} />
             <span>{payload.contact.email}</span>
@@ -272,11 +321,26 @@ function ContactRenderer({ payload }: { payload: ContactPayload }) {
         </div>
       </div>
 
-      <div className="panel-mini-card">
+      <div className="panel-mini-card panel-mini-card-centered">
         <p className="panel-section-label">Links</p>
-        <div className="panel-link-row">
+        <div className="panel-link-row panel-link-row-centered">
           {payload.quickLinks.map((link) => {
             const Icon = linkIcon(link.kind);
+
+            if (link.kind === "resume") {
+              return (
+                <button
+                  key={link.label}
+                  type="button"
+                  className="panel-link-button"
+                  onClick={() => onRunCommand("/resume")}
+                >
+                  <Icon size={15} />
+                  <span>{link.label}</span>
+                  <ArrowUpRight size={14} />
+                </button>
+              );
+            }
 
             return (
               <a
@@ -327,6 +391,33 @@ function LinkPanelRenderer({ payload }: { payload: LinkPanelPayload }) {
   );
 }
 
+function ResumePanelRenderer({ payload }: { payload: ResumePanelPayload }) {
+  return (
+    <div className="panel-stack">
+      <div className="panel-link-row panel-link-row-centered">
+        {payload.links.map((link) => {
+          const Icon = linkIcon(link.kind);
+
+          return (
+            <a
+              key={link.label}
+              href={link.href}
+              className="panel-link-button"
+              target="_blank"
+              rel="noreferrer"
+              download={link.download || undefined}
+            >
+              <Icon size={15} />
+              <span>{link.label}</span>
+              <ArrowUpRight size={14} />
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function HelpRenderer({
   payload,
   onRunCommand,
@@ -339,39 +430,17 @@ function HelpRenderer({
       <p className="panel-copy">{payload.message}</p>
       {payload.hint ? <p className="panel-muted-copy">{payload.hint}</p> : null}
 
-      {payload.commandGroups?.length ? (
-        <div className="panel-grid">
-          {payload.commandGroups.map((group) => (
-            <section key={group.label} className="panel-mini-card">
-              <p className="panel-section-label">{group.label}</p>
-              <div className="panel-command-list">
-                {group.items.map((item) => (
-                  <button
-                    key={item.command}
-                    type="button"
-                    className="panel-command-row"
-                    onClick={() => onRunCommand(item.command)}
-                  >
-                    <span>{item.command}</span>
-                    <span>{item.description}</span>
-                  </button>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      ) : null}
-
-      {payload.examples?.length ? (
-        <div className="panel-link-row">
-          {payload.examples.map((example) => (
+      {payload.commands?.length ? (
+        <div className="panel-command-list">
+          {payload.commands.map((item) => (
             <button
-              key={example}
+              key={item.command}
               type="button"
-              className="panel-link-button"
-              onClick={() => onRunCommand(example)}
+              className="panel-command-row"
+              onClick={() => onRunCommand(item.command)}
             >
-              <span>{example}</span>
+              <span>{item.command}</span>
+              <span>{item.description}</span>
             </button>
           ))}
         </div>
@@ -394,13 +463,25 @@ export function OutputRenderer({ content, onRunCommand }: OutputRendererProps) {
         />
       );
     case "projectDetail":
-      return <ProjectDetailRenderer payload={content.payload as ProjectDetailPayload} />;
+      return (
+        <ProjectDetailRenderer
+          payload={content.payload as ProjectDetailPayload}
+          onRunCommand={onRunCommand}
+        />
+      );
     case "skillsGroup":
       return <SkillsRenderer payload={content.payload as SkillsPayload} />;
     case "contactPanel":
-      return <ContactRenderer payload={content.payload as ContactPayload} />;
+      return (
+        <ContactRenderer
+          payload={content.payload as ContactPayload}
+          onRunCommand={onRunCommand}
+        />
+      );
     case "linkPanel":
       return <LinkPanelRenderer payload={content.payload as LinkPanelPayload} />;
+    case "resumePanel":
+      return <ResumePanelRenderer payload={content.payload as ResumePanelPayload} />;
     case "systemMessage":
       return (
         <HelpRenderer

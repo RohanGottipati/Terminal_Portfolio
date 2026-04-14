@@ -28,9 +28,10 @@ import {
   pushCommandToUrl,
   replaceCommandInUrl,
 } from "@/lib/commands/url";
+import { cn } from "@/lib/utils";
 import type { ModalContent, SessionLogEntry, SuggestionItem } from "@/types/terminal";
 
-type AppPhase = "locked" | "booting" | "ready";
+type AppPhase = "locked" | "booting" | "ready" | "exiting";
 
 interface AppState {
   phase: AppPhase;
@@ -43,6 +44,7 @@ interface AppState {
   activeModal: ModalContent | null;
   bootLines: string[];
   startupError: string | null;
+  exitDelayMs: number | null;
 }
 
 type AppAction =
@@ -54,19 +56,26 @@ type AppAction =
   | { type: "set-recall"; value: string; index: number }
   | { type: "set-startup-error"; value: string | null }
   | { type: "start-boot" }
+  | { type: "start-exit"; delayMs: number | null }
   | { type: "append-boot-line"; line: string }
   | { type: "finish-boot" }
-  | { type: "close-modal" };
+  | { type: "close-modal" }
+  | { type: "reset-to-locked" };
 
 const BOOT_LINES = [
   "rohan",
   "Booting rohan shell...",
+  "Initializing terminal environment",
   "Loading portfolio modules",
   "Syncing projects, experience, and contact",
-  "Ready. Type / to explore",
+  "Mounting interactive components",
+  "Ready. Type / to explore!",
 ];
 
+
 const LOCATIONS = ["Waterloo, ON", "Toronto, ON"];
+const RECENT_ACTIVITY_LIMIT = 3;
+const MENU_SCROLL_MARGIN = 24;
 
 const initialState: AppState = {
   phase: "locked",
@@ -79,6 +88,7 @@ const initialState: AppState = {
   activeModal: null,
   bootLines: [],
   startupError: null,
+  exitDelayMs: null,
 };
 
 function reducer(state: AppState, action: AppAction): AppState {
@@ -91,6 +101,16 @@ function reducer(state: AppState, action: AppAction): AppState {
         recallIndex: -1,
         isMenuOpen: action.openMenu,
         selectedSuggestionIndex: 0,
+      };
+    case "start-exit":
+      return {
+        ...state,
+        phase: "exiting",
+        input: "",
+        isMenuOpen: false,
+        selectedSuggestionIndex: 0,
+        recallIndex: -1,
+        exitDelayMs: action.delayMs,
       };
     case "set-menu-open":
       return {
@@ -124,6 +144,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         sessionLog: [],
         submittedHistory: [],
         activeModal: null,
+        exitDelayMs: null,
       };
     case "set-recall":
       return {
@@ -148,6 +169,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         recallIndex: -1,
         startupError: null,
         bootLines: [],
+        exitDelayMs: null,
       };
     case "append-boot-line":
       return {
@@ -166,6 +188,8 @@ function reducer(state: AppState, action: AppAction): AppState {
         ...state,
         activeModal: null,
       };
+    case "reset-to-locked":
+      return { ...initialState };
     default:
       return state;
   }
@@ -183,11 +207,31 @@ export default function App() {
   const hasHydratedRef = useRef(false);
   const bootTimeoutsRef = useRef<number[]>([]);
   const pendingCommandRef = useRef<string | null>(null);
+  const menuWasOpenRef = useRef(false);
+  const menuScrollRestoreRef = useRef<number | null>(null);
+  const exitTimeoutRef = useRef<number | null>(null);
 
   const suggestions =
     state.phase === "ready"
       ? getSuggestions(deferredInput, commandRegistry, portfolioData)
       : [];
+
+  function canUseWindowScroll() {
+    return typeof navigator === "undefined" || !/jsdom/i.test(navigator.userAgent);
+  }
+
+  function scrollWindow(top: number) {
+    if (!canUseWindowScroll()) {
+      return;
+    }
+
+    window.scrollTo({
+      top: Math.max(0, top),
+      behavior: "smooth",
+    });
+  }
+
+
 
   useEffect(() => {
     const target = LOCATIONS[locationIndex];
@@ -222,20 +266,45 @@ export default function App() {
   }, [state.phase]);
 
   useEffect(() => {
-    if (!state.isMenuOpen || !commandMenuRef.current) {
-      return;
+    const wasOpen = menuWasOpenRef.current;
+
+    if (state.isMenuOpen) {
+      if (!wasOpen) {
+        menuScrollRestoreRef.current = window.scrollY;
+      }
+
+      const raf = window.requestAnimationFrame(() => {
+        const menuRect = commandMenuRef.current?.getBoundingClientRect();
+        if (!menuRect) {
+          return;
+        }
+
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const nextTop = window.scrollY + (menuRect.bottom - viewportHeight) + MENU_SCROLL_MARGIN;
+
+        if (menuRect.bottom > viewportHeight - MENU_SCROLL_MARGIN) {
+          scrollWindow(nextTop);
+        }
+      });
+
+      menuWasOpenRef.current = true;
+      return () => window.cancelAnimationFrame(raf);
     }
 
-    const raf = window.requestAnimationFrame(() => {
-      if (typeof commandMenuRef.current?.scrollIntoView === "function") {
-        commandMenuRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "end",
-        });
-      }
-    });
+    if (!state.isMenuOpen && wasOpen) {
+      const targetTop = menuScrollRestoreRef.current;
+      const raf = window.requestAnimationFrame(() => {
+        if (typeof targetTop === "number") {
+          scrollWindow(targetTop);
+        }
+      });
 
-    return () => window.cancelAnimationFrame(raf);
+      menuScrollRestoreRef.current = null;
+      menuWasOpenRef.current = false;
+      return () => window.cancelAnimationFrame(raf);
+    }
+
+    menuWasOpenRef.current = state.isMenuOpen;
   }, [state.isMenuOpen, suggestions.length]);
 
   useEffect(() => {
@@ -276,7 +345,7 @@ export default function App() {
     BOOT_LINES.forEach((line, index) => {
       const timeout = window.setTimeout(() => {
         dispatch({ type: "append-boot-line", line });
-      }, 120 * (index + 1));
+      }, 280 * (index + 1));
 
       bootTimeoutsRef.current.push(timeout);
     });
@@ -290,7 +359,7 @@ export default function App() {
         pendingCommandRef.current = null;
         runCommand(pendingCommand, { urlMode: "replace" });
       }
-    }, 120 * BOOT_LINES.length + 150);
+    }, 280 * BOOT_LINES.length + 300);
 
     bootTimeoutsRef.current.push(finishTimeout);
 
@@ -299,6 +368,29 @@ export default function App() {
       bootTimeoutsRef.current = [];
     };
   }, [state.phase]);
+
+  useEffect(() => {
+    if (state.phase !== "exiting" || state.exitDelayMs === null) {
+      if (exitTimeoutRef.current !== null) {
+        window.clearTimeout(exitTimeoutRef.current);
+        exitTimeoutRef.current = null;
+      }
+      return;
+    }
+
+    exitTimeoutRef.current = window.setTimeout(() => {
+      dispatch({ type: "reset-to-locked" });
+      replaceCommandInUrl(null);
+      exitTimeoutRef.current = null;
+    }, state.exitDelayMs);
+
+    return () => {
+      if (exitTimeoutRef.current !== null) {
+        window.clearTimeout(exitTimeoutRef.current);
+        exitTimeoutRef.current = null;
+      }
+    };
+  }, [state.exitDelayMs, state.phase]);
 
   function syncUrl(command: string | null, mode: "push" | "replace" | "none") {
     if (mode === "none") {
@@ -322,6 +414,9 @@ export default function App() {
     rawInput: string,
     options: { urlMode?: "push" | "replace" | "none" } = {}
   ) {
+    if (state.phase === "exiting") {
+      return;
+    }
     const { result } = executeCommand(rawInput);
     const normalized = normalizeInput(rawInput);
 
@@ -342,6 +437,12 @@ export default function App() {
         modal: result.modal,
       });
     });
+
+    if (result.meta?.endSession) {
+      startTransition(() => {
+        dispatch({ type: "start-exit", delayMs: result.meta?.exitAfterMs ?? null });
+      });
+    }
 
     syncUrl(result.meta?.canonicalCommand ?? null, options.urlMode ?? "push");
   }
@@ -403,6 +504,9 @@ export default function App() {
   }
 
   function closeModal() {
+    if (state.phase === "exiting") {
+      return;
+    }
     dispatch({ type: "close-modal" });
     replaceCommandInUrl(null);
     window.requestAnimationFrame(() => inputRef.current?.focus());
@@ -417,12 +521,20 @@ export default function App() {
 
     const command = getCommandFromUrl();
     if (command) {
-      startBoot(command);
+      dispatch({ type: "finish-boot" });
+      window.requestAnimationFrame(() => {
+        inputRef.current?.focus();
+        runCommand(command, { urlMode: "replace" });
+      });
+      return;
     }
   }, []);
 
   useEffect(() => {
     function handlePopState() {
+      if (state.phase === "exiting") {
+        return;
+      }
       const command = getCommandFromUrl();
 
       if (!command) {
@@ -442,8 +554,10 @@ export default function App() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [state.phase]);
 
-  const recentActivity = state.sessionLog.slice(-3).reverse();
+  const recentActivity = state.sessionLog.slice(-RECENT_ACTIVITY_LIMIT).reverse();
   const currentLocation = typedLocation || "\u00a0";
+  const isIdleShell = state.sessionLog.length === 0;
+
 
   if (state.phase === "locked") {
     return (
@@ -511,8 +625,11 @@ export default function App() {
   return (
     <div className="app-shell">
       <div className="app-frame">
-        <section className="terminal-panel">
-          <div ref={historyRef} className="terminal-history">
+        <section className={cn("terminal-panel", isIdleShell && "is-idle")}>
+          <div
+            ref={historyRef}
+            className={cn("terminal-history", isIdleShell && "is-idle")}
+          >
             <TerminalDashboard
               recentActivity={recentActivity}
               onRunCommand={runCommand}
