@@ -48,7 +48,7 @@ const spaFallback = () => {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), spaFallback()],
+  plugins: [react({ fastRefresh: !process.env.VITEST }), spaFallback()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -76,6 +76,12 @@ export default defineConfig({
     fs: {
       strict: false
     }
+  },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./src/test/setup.ts",
+    css: true
   }
 })
 // Performance optimizations
