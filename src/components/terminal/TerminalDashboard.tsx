@@ -22,7 +22,7 @@ export function TerminalDashboard({
 
       <div className="dashboard-grid">
         <div className="dashboard-pane">
-          <p className="dashboard-heading">Welcome to Rohan</p>
+          <p className="dashboard-heading">Welcome to Rohan's Portfolio</p>
           <p className="dashboard-status">{portfolioData.identity.role}</p>
           <p className="dashboard-location">{currentLocation}</p>
           <p className="dashboard-path">~/portfolio/rohan-shell</p>

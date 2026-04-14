@@ -4,7 +4,7 @@ export const portfolioData: PortfolioData = {
   identity: {
     name: "Rohan Gottipati",
     shortName: "Rohan",
-    role: "Product Software Developer",
+    role: "Software Engineer",
     subtitle: "Interactive portfolio",
     handle: "rohangottipati",
     avatar: "/rohan.jpg",

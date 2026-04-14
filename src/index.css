@@ -180,7 +180,7 @@
 
   .dashboard-heading {
     margin: 0 0 16px;
-    font-size: clamp(1.6rem, 3vw, 2.25rem);
+    font-size: clamp(1.15rem, 2.2vw, 1.5rem);
     font-weight: 600;
     line-height: 1.2;
   }
