@@ -196,8 +196,9 @@ describe("App", () => {
         vi.advanceTimersByTime(120 * 5 + 300);
       });
 
-      expect(screen.getByRole("heading", { name: /Goodbye/ })).toBeInTheDocument();
+      expect(screen.getByRole("dialog", { name: /Goodbye/ })).toBeInTheDocument();
       expect(screen.getByLabelText("Portfolio command input")).toBeDisabled();
+      expect(screen.queryByLabelText("Keyboard navigation help")).not.toBeInTheDocument();
 
       await act(async () => {
         vi.advanceTimersByTime(9_000);

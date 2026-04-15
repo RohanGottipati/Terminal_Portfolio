@@ -437,14 +437,16 @@ function HelpRenderer({
 }) {
   return (
     <div className="panel-stack">
-      <div className="panel-navigation-hint" aria-label="Keyboard navigation help">
-        <span>Tip: Throughout this site, navigate with</span>
-        <kbd>↑</kbd>
-        <kbd>↓</kbd>
-        <span>and close with</span>
-        <kbd>Esc</kbd>
-        <span>if you'd like!</span>
-      </div>
+      {payload.commands?.length ? (
+        <div className="panel-navigation-hint" aria-label="Keyboard navigation help">
+          <span>Tip: Throughout this site, navigate with</span>
+          <kbd>↑</kbd>
+          <kbd>↓</kbd>
+          <span>and close with</span>
+          <kbd>Esc</kbd>
+          <span>if you'd like!</span>
+        </div>
+      ) : null}
       <p className="panel-copy">{payload.message}</p>
       {payload.hint ? <p className="panel-muted-copy">{payload.hint}</p> : null}
 
