@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { FileText, Github, Linkedin, Mail } from "lucide-react";
 
 import { CommandMenu } from "@/components/terminal/CommandMenu";
 import { TerminalDashboard } from "@/components/terminal/TerminalDashboard";
@@ -72,6 +73,32 @@ const BOOT_LINES = [
   "  starting interactive shell",
   "  ready — type / to explore",
 ];
+
+const WINDOW_ACTIONS = [
+  {
+    label: "Email Rohan",
+    href: `mailto:${portfolioData.contact.email}`,
+    Icon: Mail,
+  },
+  {
+    label: "View GitHub profile",
+    href: portfolioData.contact.github,
+    Icon: Github,
+    openInNewTab: true,
+  },
+  {
+    label: "View LinkedIn profile",
+    href: portfolioData.contact.linkedin,
+    Icon: Linkedin,
+    openInNewTab: true,
+  },
+  {
+    label: "Open resume PDF",
+    href: portfolioData.contact.resume,
+    Icon: FileText,
+    openInNewTab: true,
+  },
+] as const;
 
 
 const LOCATIONS = ["Waterloo, ON", "Toronto, ON"];
@@ -694,6 +721,20 @@ export default function App() {
               <span className="terminal-window-dot terminal-window-dot-zoom" />
             </div>
             <span className="terminal-window-title">rohan shell v1.3.2</span>
+            <div className="terminal-window-actions" aria-label="Contact shortcuts">
+              {WINDOW_ACTIONS.map(({ label, href, Icon, openInNewTab }) => (
+                <a
+                  key={label}
+                  href={href}
+                  className="terminal-window-action"
+                  aria-label={label}
+                  title={label}
+                  {...(openInNewTab ? { target: "_blank", rel: "noreferrer" } : {})}
+                >
+                  <Icon size={16} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
           </div>
 
           <div

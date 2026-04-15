@@ -121,6 +121,33 @@ describe("App", () => {
     expect(dashboard.queryByText("Opened /about")).not.toBeInTheDocument();
   });
 
+  it("shows top-right contact shortcuts in the terminal chrome", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
+
+    const chrome = within(screen.getByRole("group", { name: "Terminal window" }));
+
+    expect(chrome.getByRole("link", { name: "Email Rohan" })).toHaveAttribute(
+      "href",
+      "mailto:rohan.gottipati@gmail.com"
+    );
+    expect(chrome.getByRole("link", { name: "View GitHub profile" })).toHaveAttribute(
+      "href",
+      "https://github.com/RohanGottipati"
+    );
+    expect(chrome.getByRole("link", { name: "View LinkedIn profile" })).toHaveAttribute(
+      "href",
+      "https://www.linkedin.com/in/rohangottipati/"
+    );
+    expect(chrome.getByRole("link", { name: "Open resume PDF" })).toHaveAttribute(
+      "href",
+      "/resume.pdf"
+    );
+  });
+
   it("supports navigating back to /projects from project detail", async () => {
     const user = userEvent.setup();
     render(<App />);
