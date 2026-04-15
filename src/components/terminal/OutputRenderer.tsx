@@ -101,7 +101,7 @@ function TimelineEntry({
   hideOrg?: boolean;
 }) {
   return (
-    <article className="panel-timeline-entry">
+    <article className="panel-timeline-entry" tabIndex={0}>
       <div className="panel-timeline-head">
         <div>
           <h3>{entry.title}</h3>

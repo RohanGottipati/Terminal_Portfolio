@@ -514,9 +514,11 @@
     transition: border-color 160ms var(--ease), background 160ms var(--ease), color 160ms var(--ease);
   }
 
-  .modal-header-link:hover {
+  .modal-header-link:hover,
+  .modal-header-link:focus-visible {
     border-color: var(--line-strong);
     background: var(--accent-soft);
+    outline: none;
   }
 
   .modal-kicker {
@@ -552,10 +554,12 @@
     transition: color 160ms var(--ease), border-color 160ms var(--ease), background 160ms var(--ease);
   }
 
-  .modal-close:hover {
+  .modal-close:hover,
+  .modal-close:focus-visible {
     color: var(--text);
     border-color: var(--line-strong);
     background: var(--accent-soft);
+    outline: none;
   }
 
   .modal-body {
@@ -757,9 +761,11 @@
     transition: border-color 160ms var(--ease), background 160ms var(--ease);
   }
 
-  .panel-timeline-entry:hover {
+  .panel-timeline-entry:hover,
+  .panel-timeline-entry:focus-visible {
     border-color: var(--line-strong);
     background: rgba(135, 175, 240, 0.03);
+    outline: none;
   }
 
   .panel-promotion-group {
@@ -854,9 +860,12 @@
   }
 
   .panel-project-row:hover,
-  .panel-command-row:hover {
+  .panel-project-row:focus-visible,
+  .panel-command-row:hover,
+  .panel-command-row:focus-visible {
     border-color: var(--line-strong);
     background: var(--accent-soft);
+    outline: none;
   }
 
   .panel-project-title {
@@ -925,8 +934,10 @@
     transition: color 160ms var(--ease);
   }
 
-  .panel-inline-action:hover {
+  .panel-inline-action:hover,
+  .panel-inline-action:focus-visible {
     color: var(--text);
+    outline: none;
   }
 
   .panel-link-button {
@@ -941,9 +952,11 @@
     transition: border-color 160ms var(--ease), background 160ms var(--ease), color 160ms var(--ease);
   }
 
-  .panel-link-button:hover {
+  .panel-link-button:hover,
+  .panel-link-button:focus-visible {
     border-color: var(--line-strong);
     background: var(--accent-soft);
+    outline: none;
   }
 
   .panel-resume-preview-shell {

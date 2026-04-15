@@ -42,6 +42,7 @@ interface AppState {
   selectedSuggestionIndex: number;
   isMenuOpen: boolean;
   activeModal: ModalContent | null;
+  modalBackCommand: string | null;
   bootLines: string[];
   startupError: string | null;
   exitDelayMs: number | null;
@@ -51,7 +52,7 @@ type AppAction =
   | { type: "set-input"; value: string; openMenu: boolean }
   | { type: "set-menu-open"; open: boolean }
   | { type: "set-selected-suggestion"; index: number }
-  | { type: "append-log"; entry: SessionLogEntry; command: string; modal: ModalContent | null }
+  | { type: "append-log"; entry: SessionLogEntry; command: string; modal: ModalContent | null; backCommand: string | null }
   | { type: "clear-session" }
   | { type: "set-recall"; value: string; index: number }
   | { type: "set-startup-error"; value: string | null }
@@ -86,6 +87,7 @@ const initialState: AppState = {
   selectedSuggestionIndex: 0,
   isMenuOpen: false,
   activeModal: null,
+  modalBackCommand: null,
   bootLines: [],
   startupError: null,
   exitDelayMs: null,
@@ -133,6 +135,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         sessionLog: [...state.sessionLog, action.entry],
         submittedHistory: [...state.submittedHistory, action.command],
         activeModal: action.modal ?? state.activeModal,
+        modalBackCommand: action.modal !== null ? action.backCommand : state.modalBackCommand,
       };
     case "clear-session":
       return {
@@ -144,6 +147,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         sessionLog: [],
         submittedHistory: [],
         activeModal: null,
+        modalBackCommand: null,
         exitDelayMs: null,
       };
     case "set-recall":
@@ -187,6 +191,7 @@ function reducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         activeModal: null,
+        modalBackCommand: null,
       };
     case "reset-to-locked":
       return { ...initialState };
@@ -428,6 +433,11 @@ export default function App() {
       return;
     }
 
+    const backCommand =
+      result.modal?.type === "projectDetail" && state.activeModal?.type === "projectList"
+        ? "/projects"
+        : null;
+
     const entry = createSessionLogEntry(normalized || rawInput.trim(), result);
     startTransition(() => {
       dispatch({
@@ -435,6 +445,7 @@ export default function App() {
         entry,
         command: normalized || rawInput.trim(),
         modal: result.modal,
+        backCommand,
       });
     });
 
@@ -505,6 +516,10 @@ export default function App() {
 
   function closeModal() {
     if (state.phase === "exiting") {
+      return;
+    }
+    if (state.modalBackCommand) {
+      runCommand(state.modalBackCommand, { urlMode: "replace" });
       return;
     }
     dispatch({ type: "close-modal" });

@@ -41,6 +41,7 @@ export interface CommandMeta {
   canonicalCommand?: string | null;
   endSession?: boolean;
   exitAfterMs?: number;
+  backCommand?: string | null;
 }
 
 export interface IntroPayload {
