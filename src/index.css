@@ -624,8 +624,8 @@
 
   .command-menu-item {
     display: grid;
-    grid-template-columns: minmax(180px, 250px) minmax(0, 1fr);
-    gap: 26px;
+    grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+    gap: 16px;
     width: 100%;
     padding: 2px 16px;
     border: 0;
@@ -641,15 +641,15 @@
 
   .command-menu-label {
     color: #9ab7e8;
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 1.5;
   }
 
   .command-menu-description {
-    color: var(--muted-strong);
-    font-size: 1rem;
-    line-height: 1.4;
+    color: var(--muted);
+    font-size: 0.84rem;
+    line-height: 1.5;
   }
 
   .command-menu-empty {
