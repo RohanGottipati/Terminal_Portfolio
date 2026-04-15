@@ -21,6 +21,15 @@ export function TerminalDashboard({
       <div className="dashboard-grid">
         <div className="dashboard-pane">
           <p className="dashboard-heading">Welcome to Rohan's Portfolio</p>
+          <figure className="dashboard-avatar-shell">
+            <img
+              src="/r.png"
+              alt="Hacker pixel avatar"
+              className="dashboard-avatar-image"
+              width={96}
+              height={96}
+            />
+          </figure>
           <p className="dashboard-status">{portfolioData.identity.role}</p>
           <p className="dashboard-location">{currentLocation}</p>
           <p className="dashboard-path">~/portfolio/rohan-shell</p>
