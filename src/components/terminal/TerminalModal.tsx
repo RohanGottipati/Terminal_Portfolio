@@ -1,4 +1,4 @@
-import { useEffect, useRef, type KeyboardEvent } from "react";
+import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 
@@ -19,11 +19,45 @@ export function TerminalModal({
   onRunCommand,
 }: TerminalModalProps) {
   const bodyRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    function getFocusableItems() {
+      const panel = panelRef.current;
+      if (!panel) return [];
+      return Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE));
+    }
+
+    function focusByDelta(delta: number) {
+      const items = getFocusableItems();
+      if (!items.length) return;
+
+      const currentIndex = Math.max(0, items.indexOf(document.activeElement as HTMLElement));
+      const nextIndex = Math.min(items.length - 1, Math.max(0, currentIndex + delta));
+      const next = items[nextIndex];
+      if (!next) return;
+
+      next.focus({ preventScroll: true });
+      next.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
     function handleKeyDown(event: globalThis.KeyboardEvent) {
       if (event.key === "Escape") {
+        event.preventDefault();
         onClose();
+        return;
+      }
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        focusByDelta(1);
+        return;
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        focusByDelta(-1);
       }
     }
 
@@ -31,35 +65,13 @@ export function TerminalModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  // Auto-focus the first focusable item after each content transition
+  // Keep focus on the close control so content rows are not pre-highlighted.
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      const first = bodyRef.current?.querySelector<HTMLElement>(FOCUSABLE);
-      first?.focus({ preventScroll: true });
+      closeButtonRef.current?.focus({ preventScroll: true });
     }, 250);
     return () => window.clearTimeout(timer);
   }, [content.title]);
-
-  function handleBodyKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-
-    const items = Array.from(
-      bodyRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? []
-    );
-    if (!items.length) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    const current = items.indexOf(document.activeElement as HTMLElement);
-    const next =
-      event.key === "ArrowDown"
-        ? Math.min(current + 1, items.length - 1)
-        : Math.max(current - 1, 0);
-
-    items[next]?.focus({ preventScroll: true });
-    items[next]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }
 
   return (
     <motion.div
@@ -71,6 +83,7 @@ export function TerminalModal({
       onMouseDown={onClose}
     >
       <motion.div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label={content.title}
@@ -83,14 +96,13 @@ export function TerminalModal({
       >
         <header className="modal-header">
           <div className="modal-title-block">
-            <p className="modal-kicker">rohan shell</p>
-            <h2 className="modal-title">{content.title}</h2>
-            {content.description ? (
-              <p className="modal-description">{content.description}</p>
-            ) : null}
+            <p className="modal-kicker">
+              ~/portfolio/rohan-shell{content.path ? `/${content.path}` : ""}
+            </p>
           </div>
           <div className="modal-header-controls">
             <button
+              ref={closeButtonRef}
               type="button"
               className="modal-close"
               onClick={onClose}
@@ -101,7 +113,7 @@ export function TerminalModal({
           </div>
         </header>
 
-        <div className="modal-body" ref={bodyRef} onKeyDown={handleBodyKeyDown}>
+        <div className="modal-body" ref={bodyRef}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={content.title}

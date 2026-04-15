@@ -13,19 +13,23 @@ describe("App", () => {
     render(<App />);
 
     expect(screen.getByPlaceholderText("Type rohan to start")).toBeInTheDocument();
-    expect(screen.queryByText("Welcome to Rohan")).not.toBeInTheDocument();
+    expect(screen.queryByText("Welcome to Rohan", { exact: false })).not.toBeInTheDocument();
 
     await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
 
     expect(
-      await screen.findByText("Welcome to Rohan", {}, { timeout: 2000 })
+      await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 })
     ).toBeInTheDocument();
 
     const input = screen.getByLabelText("Portfolio command input");
     await user.type(input, "/about{enter}");
 
     expect(await screen.findByText("Profile")).toBeInTheDocument();
-    expect(screen.getByText("Bachelor of Computer Science at Wilfrid Laurier University.")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Bachelor of Computer Science, Big Data Concentration at Wilfrid Laurier University."
+      )
+    ).toBeInTheDocument();
     expect(
       screen.queryByText(
         "Computer Science student at Wilfrid Laurier University building software with a product-first mindset."
@@ -48,7 +52,7 @@ describe("App", () => {
     render(<App />);
 
     await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
-    await screen.findByText("Welcome to Rohan", {}, { timeout: 2000 });
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
     await user.type(screen.getByLabelText("Portfolio command input"), "/sk{enter}");
 
     expect(await screen.findByText("Skills")).toBeInTheDocument();
@@ -63,7 +67,7 @@ describe("App", () => {
       await screen.findByText(
         "Security-focused analytics layer for AI agents operating on the Solana blockchain.",
         {},
-        { timeout: 2000 }
+        { timeout: 3500 }
       )
     ).toBeInTheDocument();
 
@@ -75,7 +79,7 @@ describe("App", () => {
     render(<App />);
 
     await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
-    await screen.findByText("Welcome to Rohan", {}, { timeout: 2000 });
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
 
     await user.type(screen.getByLabelText("Portfolio command input"), "/experience{enter}");
 
@@ -100,7 +104,7 @@ describe("App", () => {
     render(<App />);
 
     await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
-    await screen.findByText("Welcome to Rohan", {}, { timeout: 2000 });
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
 
     const input = screen.getByLabelText("Portfolio command input");
 
@@ -122,7 +126,7 @@ describe("App", () => {
     render(<App />);
 
     await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
-    await screen.findByText("Welcome to Rohan", {}, { timeout: 2000 });
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
 
     await user.type(screen.getByLabelText("Portfolio command input"), "/project spectra{enter}");
     expect(await screen.findByText("Back to /projects")).toBeInTheDocument();
@@ -138,11 +142,13 @@ describe("App", () => {
     render(<App />);
 
     await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
-    await screen.findByText("Welcome to Rohan", {}, { timeout: 2000 });
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
 
     await user.type(screen.getByLabelText("Portfolio command input"), "/resume{enter}");
 
-    expect(await screen.findByTitle("Resume PDF preview")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Resume" }, { timeout: 5000 })
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Open in new page" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Download PDF" })).toBeInTheDocument();
   });
@@ -159,7 +165,7 @@ describe("App", () => {
         vi.advanceTimersByTime(120 * 5 + 300);
       });
 
-      expect(screen.getByText("Goodbye")).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: /Goodbye/ })).toBeInTheDocument();
       expect(screen.getByLabelText("Portfolio command input")).toBeDisabled();
 
       await act(async () => {

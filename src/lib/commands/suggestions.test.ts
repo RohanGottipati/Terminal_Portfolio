@@ -14,8 +14,8 @@ describe("command suggestions", () => {
       "/contact",
       "/resume",
       "/help",
-      "/exit",
       "/clear",
+      "/exit",
     ]);
   });
 

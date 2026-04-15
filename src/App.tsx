@@ -64,19 +64,20 @@ type AppAction =
   | { type: "reset-to-locked" };
 
 const BOOT_LINES = [
-  "rohan",
-  "Booting rohan shell...",
-  "Initializing terminal environment",
-  "Loading portfolio modules",
-  "Syncing projects, experience, and contact",
-  "Mounting interactive components",
-  "Ready. Type / to explore!",
+  "rohan@portfolio:~$ rohan",
+  "  initializing ~/portfolio/rohan-shell",
+  "  loading portfolio data",
+  "  mounting projects, experience, skills",
+  "  resolving contact + links",
+  "  starting interactive shell",
+  "  ready — type / to explore",
 ];
 
 
 const LOCATIONS = ["Waterloo, ON", "Toronto, ON"];
 const RECENT_ACTIVITY_LIMIT = 3;
 const MENU_SCROLL_MARGIN = 24;
+const FOCUSABLE = "button:not([disabled]), a[href], [tabindex='0']";
 
 const initialState: AppState = {
   phase: "locked",
@@ -84,7 +85,7 @@ const initialState: AppState = {
   sessionLog: [],
   submittedHistory: [],
   recallIndex: -1,
-  selectedSuggestionIndex: 0,
+  selectedSuggestionIndex: -1,
   isMenuOpen: false,
   activeModal: null,
   modalBackCommand: null,
@@ -102,7 +103,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         startupError: null,
         recallIndex: -1,
         isMenuOpen: action.openMenu,
-        selectedSuggestionIndex: 0,
+        selectedSuggestionIndex: action.openMenu ? -1 : state.selectedSuggestionIndex,
       };
     case "start-exit":
       return {
@@ -110,7 +111,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         phase: "exiting",
         input: "",
         isMenuOpen: false,
-        selectedSuggestionIndex: 0,
+        selectedSuggestionIndex: -1,
         recallIndex: -1,
         exitDelayMs: action.delayMs,
       };
@@ -118,7 +119,7 @@ function reducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         isMenuOpen: action.open,
-        selectedSuggestionIndex: action.open ? state.selectedSuggestionIndex : 0,
+        selectedSuggestionIndex: action.open ? state.selectedSuggestionIndex : -1,
       };
     case "set-selected-suggestion":
       return {
@@ -130,7 +131,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         ...state,
         input: "",
         isMenuOpen: false,
-        selectedSuggestionIndex: 0,
+        selectedSuggestionIndex: -1,
         recallIndex: -1,
         sessionLog: [...state.sessionLog, action.entry],
         submittedHistory: [...state.submittedHistory, action.command],
@@ -142,7 +143,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         ...state,
         input: "",
         isMenuOpen: false,
-        selectedSuggestionIndex: 0,
+        selectedSuggestionIndex: -1,
         recallIndex: -1,
         sessionLog: [],
         submittedHistory: [],
@@ -156,7 +157,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         input: action.value,
         recallIndex: action.index,
         isMenuOpen: action.value.trimStart().startsWith("/"),
-        selectedSuggestionIndex: 0,
+        selectedSuggestionIndex: action.value.trimStart().startsWith("/") ? -1 : state.selectedSuggestionIndex,
       };
     case "set-startup-error":
       return {
@@ -169,7 +170,7 @@ function reducer(state: AppState, action: AppAction): AppState {
         phase: "booting",
         input: "",
         isMenuOpen: false,
-        selectedSuggestionIndex: 0,
+        selectedSuggestionIndex: -1,
         recallIndex: -1,
         startupError: null,
         bootLines: [],
@@ -209,6 +210,7 @@ export default function App() {
   const historyRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const commandMenuRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLElement | null>(null);
   const hasHydratedRef = useRef(false);
   const bootTimeoutsRef = useRef<number[]>([]);
   const pendingCommandRef = useRef<string | null>(null);
@@ -330,12 +332,12 @@ export default function App() {
   }, [state.sessionLog]);
 
   useEffect(() => {
-    if (suggestions.length === 0 && state.selectedSuggestionIndex !== 0) {
-      dispatch({ type: "set-selected-suggestion", index: 0 });
+    if (suggestions.length === 0 && state.selectedSuggestionIndex !== -1) {
+      dispatch({ type: "set-selected-suggestion", index: -1 });
     }
 
     if (suggestions.length && state.selectedSuggestionIndex > suggestions.length - 1) {
-      dispatch({ type: "set-selected-suggestion", index: 0 });
+      dispatch({ type: "set-selected-suggestion", index: -1 });
     }
   }, [state.selectedSuggestionIndex, suggestions]);
 
@@ -348,9 +350,10 @@ export default function App() {
     bootTimeoutsRef.current = [];
 
     BOOT_LINES.forEach((line, index) => {
+      const delay = index === 0 ? 120 : 120 + index * 160;
       const timeout = window.setTimeout(() => {
         dispatch({ type: "append-boot-line", line });
-      }, 280 * (index + 1));
+      }, delay);
 
       bootTimeoutsRef.current.push(timeout);
     });
@@ -364,7 +367,7 @@ export default function App() {
         pendingCommandRef.current = null;
         runCommand(pendingCommand, { urlMode: "replace" });
       }
-    }, 280 * BOOT_LINES.length + 300);
+    }, 120 + (BOOT_LINES.length - 1) * 160 + 280);
 
     bootTimeoutsRef.current.push(finishTimeout);
 
@@ -387,6 +390,7 @@ export default function App() {
       dispatch({ type: "reset-to-locked" });
       replaceCommandInUrl(null);
       exitTimeoutRef.current = null;
+      window.close();
     }, state.exitDelayMs);
 
     return () => {
@@ -527,6 +531,31 @@ export default function App() {
     window.requestAnimationFrame(() => inputRef.current?.focus());
   }
 
+  function focusPanelItem(direction: "up" | "down") {
+    const panel = panelRef.current;
+    if (!panel) return false;
+
+    const items = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+      (el) => !el.classList.contains("terminal-input")
+    );
+    if (!items.length) return false;
+
+    const active = document.activeElement as HTMLElement | null;
+    const currentIndex = active ? items.indexOf(active) : -1;
+
+    const nextIndex =
+      direction === "down"
+        ? Math.min(items.length - 1, currentIndex === -1 ? 0 : currentIndex + 1)
+        : Math.max(0, currentIndex === -1 ? items.length - 1 : currentIndex - 1);
+
+    const next = items[nextIndex];
+    if (!next) return false;
+
+    next.focus({ preventScroll: true });
+    next.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    return true;
+  }
+
   useEffect(() => {
     if (hasHydratedRef.current) {
       return;
@@ -587,7 +616,7 @@ export default function App() {
             value={state.input}
             inputRef={inputRef}
             mode="startup"
-            placeholder="Type rohan to start"
+            placeholder="Type rohan, then press Enter"
             onChange={(value) =>
               dispatch({
                 type: "set-input",
@@ -611,7 +640,7 @@ export default function App() {
                 dispatch({ type: "set-input", value: "", openMenu: false });
                 dispatch({
                   type: "set-startup-error",
-                  value: "Unknown input. Type rohan to start.",
+                  value: "Unknown input. Type rohan, then press Enter.",
                 });
               }
             }}
@@ -635,9 +664,9 @@ export default function App() {
           {state.bootLines.map((line, index) => (
             <motion.p
               key={`${line}-${index}`}
-              initial={{ opacity: 0, x: -12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
               className="boot-line"
             >
               {line}
@@ -656,7 +685,19 @@ export default function App() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
       >
-        <section className={cn("terminal-panel", isIdleShell && "is-idle")}>
+        <section
+          ref={panelRef}
+          className={cn("terminal-panel", isIdleShell && "is-idle")}
+        >
+          <div className="terminal-window-chrome" role="group" aria-label="Terminal window">
+            <div className="terminal-window-dots" aria-hidden="true">
+              <span className="terminal-window-dot terminal-window-dot-close" />
+              <span className="terminal-window-dot terminal-window-dot-minimize" />
+              <span className="terminal-window-dot terminal-window-dot-zoom" />
+            </div>
+            <span className="terminal-window-title">rohan shell v1.3.2</span>
+          </div>
+
           <div
             ref={historyRef}
             className={cn("terminal-history", isIdleShell && "is-idle")}
@@ -673,6 +714,7 @@ export default function App() {
             <TerminalInput
               value={state.input}
               inputRef={inputRef}
+              disabled={state.phase === "exiting"}
               placeholder="Type / to explore commands"
               onChange={(value) =>
                 dispatch({
@@ -688,7 +730,7 @@ export default function App() {
                     type: "set-selected-suggestion",
                     index:
                       suggestions.length === 0
-                        ? 0
+                        ? -1
                         : (state.selectedSuggestionIndex + 1) % suggestions.length,
                   });
                   return;
@@ -700,22 +742,38 @@ export default function App() {
                     type: "set-selected-suggestion",
                     index:
                       suggestions.length === 0
-                        ? 0
-                        : (state.selectedSuggestionIndex - 1 + suggestions.length) %
-                          suggestions.length,
+                        ? -1
+                        : state.selectedSuggestionIndex === -1
+                          ? suggestions.length - 1
+                          : (state.selectedSuggestionIndex - 1 + suggestions.length) %
+                            suggestions.length,
                   });
                   return;
                 }
 
                 if (event.key === "Tab" && state.isMenuOpen && suggestions.length) {
                   event.preventDefault();
-                  applySuggestion(suggestions[state.selectedSuggestionIndex], false);
+                  const selectedSuggestion =
+                    state.selectedSuggestionIndex === -1
+                      ? suggestions[0]
+                      : suggestions[state.selectedSuggestionIndex];
+                  applySuggestion(selectedSuggestion, false);
                   return;
                 }
 
                 if (event.key === "Escape") {
                   event.preventDefault();
-                  dispatch({ type: "set-menu-open", open: false });
+                  if (state.activeModal) {
+                    closeModal();
+                    return;
+                  }
+
+                  if (state.isMenuOpen) {
+                    dispatch({ type: "set-menu-open", open: false });
+                    return;
+                  }
+
+                  window.requestAnimationFrame(() => inputRef.current?.focus());
                   return;
                 }
 
@@ -738,7 +796,11 @@ export default function App() {
                       return;
                     }
 
-                    applySuggestion(suggestions[state.selectedSuggestionIndex], true);
+                    const selectedSuggestion =
+                      state.selectedSuggestionIndex === -1
+                        ? suggestions[0]
+                        : suggestions[state.selectedSuggestionIndex];
+                    applySuggestion(selectedSuggestion, true);
                     return;
                   }
 
@@ -751,12 +813,34 @@ export default function App() {
 
                 if (event.key === "ArrowUp") {
                   event.preventDefault();
+                  if (
+                    !state.isMenuOpen &&
+                    !state.activeModal &&
+                    isIdleShell &&
+                    state.input.length === 0 &&
+                    state.submittedHistory.length === 0
+                  ) {
+                    focusPanelItem("up");
+                    return;
+                  }
+
                   recallCommand("up");
                   return;
                 }
 
                 if (event.key === "ArrowDown") {
                   event.preventDefault();
+                  if (
+                    !state.isMenuOpen &&
+                    !state.activeModal &&
+                    isIdleShell &&
+                    state.input.length === 0 &&
+                    state.submittedHistory.length === 0
+                  ) {
+                    focusPanelItem("down");
+                    return;
+                  }
+
                   recallCommand("down");
                 }
               }}

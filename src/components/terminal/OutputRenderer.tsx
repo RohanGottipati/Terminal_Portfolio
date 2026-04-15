@@ -78,7 +78,7 @@ function IntroRenderer({ payload }: { payload: IntroPayload }) {
 
       {payload.highlights?.length ? (
         <div className="panel-list-block">
-          <p className="panel-section-label">Highlights</p>
+          <p className="panel-section-label">Currently</p>
           <ul className="panel-bullet-list">
             {payload.highlights.map((highlight) => (
               <li key={highlight}>

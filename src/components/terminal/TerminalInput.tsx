@@ -49,55 +49,69 @@ export function TerminalInput({
   const showPlaceholder = !value.length;
 
   return (
-    <div className="terminal-input-shell">
-      <div className="terminal-prompt" aria-hidden="true">
-        <span className={mode === "startup" ? "terminal-prompt-startup" : "terminal-prompt-ready"}>
-          &gt;
-        </span>
-      </div>
+    <>
+      <div className="terminal-input-double-rule" aria-hidden="true" />
 
-      <div className="terminal-input-track">
-        <span ref={measureRef} className="terminal-input-measure">
-          {measuredText}
-        </span>
+      <div className="terminal-input-shell">
+        <div className="terminal-prompt" aria-hidden="true">
+          {mode === "startup" ? (
+            <span className="terminal-prompt-startup">&gt;</span>
+          ) : (
+            <span
+              className="terminal-prompt-command"
+              title="rohan@portfolio:~/portfolio/rohan-shell"
+            >
+              <span className="terminal-prompt-user">rohan@portfolio</span>
+              <span className="terminal-prompt-sep">:</span>
+              <span className="terminal-prompt-path">~/portfolio/rohan-shell</span>
+              <span className="terminal-prompt-dollar">$</span>
+            </span>
+          )}
+        </div>
 
-        {showPlaceholder ? (
-          <span className="terminal-input-placeholder">{placeholder}</span>
-        ) : null}
+        <div className="terminal-input-track">
+          <span ref={measureRef} className="terminal-input-measure">
+            {measuredText}
+          </span>
 
-        <input
-          ref={inputRef}
-          className="terminal-input"
-          value={value}
-          placeholder={placeholder}
-          onChange={(event) => {
-            onChange(event.target.value);
-            setCaretIndex(event.target.selectionStart ?? event.target.value.length);
-          }}
-          onKeyDown={onKeyDown}
-          onKeyUp={syncCaret}
-          onClick={syncCaret}
-          onSelect={syncCaret}
-          onFocus={() => {
-            setIsFocused(true);
-            syncCaret();
-          }}
-          onBlur={() => setIsFocused(false)}
-          spellCheck={false}
-          autoCapitalize="off"
-          autoCorrect="off"
-          autoComplete="off"
-          disabled={disabled}
-          aria-label={mode === "startup" ? "Startup input" : "Portfolio command input"}
-        />
+          {showPlaceholder ? (
+            <span className="terminal-input-placeholder">{placeholder}</span>
+          ) : null}
 
-        {showCursor ? (
-          <span
-            className="terminal-block-cursor"
-            style={{ transform: `translate(${cursorOffset}px, -50%)` }}
+          <input
+            ref={inputRef}
+            className="terminal-input"
+            value={value}
+            placeholder={placeholder}
+            onChange={(event) => {
+              onChange(event.target.value);
+              setCaretIndex(event.target.selectionStart ?? event.target.value.length);
+            }}
+            onKeyDown={onKeyDown}
+            onKeyUp={syncCaret}
+            onClick={syncCaret}
+            onSelect={syncCaret}
+            onFocus={() => {
+              setIsFocused(true);
+              syncCaret();
+            }}
+            onBlur={() => setIsFocused(false)}
+            spellCheck={false}
+            autoCapitalize="off"
+            autoCorrect="off"
+            autoComplete="off"
+            disabled={disabled}
+            aria-label={mode === "startup" ? "Startup input" : "Portfolio command input"}
           />
-        ) : null}
+
+          {showCursor ? (
+            <span
+              className="terminal-block-cursor"
+              style={{ transform: `translate(${cursorOffset}px, -50%)` }}
+            />
+          ) : null}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

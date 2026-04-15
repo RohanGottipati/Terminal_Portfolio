@@ -123,6 +123,7 @@ export interface ModalContent {
   status: CommandStatus;
   title: string;
   description?: string;
+  path?: string;
   payload: ModalPayload;
 }
 

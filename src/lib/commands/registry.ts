@@ -12,7 +12,8 @@ function createModal(
   title: string,
   description: string,
   payload: ModalContent["payload"],
-  status: ModalContent["status"] = "success"
+  status: ModalContent["status"] = "success",
+  path?: string
 ): ModalContent {
   return {
     type,
@@ -20,6 +21,7 @@ function createModal(
     description,
     payload,
     status,
+    path,
   };
 }
 
@@ -85,7 +87,7 @@ export function createCommandRegistry(): CommandDefinition[] {
               context.portfolio.about.currentFocus,
             ].filter((paragraph) => paragraph.trim().length > 0),
             highlights: context.portfolio.about.highlights,
-          }),
+          }, "success", "about"),
           logLine: "Opened /about",
           meta: { canonicalCommand: "/about" },
         }),
@@ -102,7 +104,7 @@ export function createCommandRegistry(): CommandDefinition[] {
           modal: createModal("timeline", "Experience", "", {
             heading: "Experience Timeline",
             entries: context.portfolio.experience,
-          }),
+          }, "success", "experience"),
           logLine: "Opened /experience",
           meta: { canonicalCommand: "/experience" },
         }),
@@ -119,7 +121,7 @@ export function createCommandRegistry(): CommandDefinition[] {
           modal: createModal("projectList", "Projects", "", {
             heading: "Project Directory",
             projects: context.portfolio.projects,
-          }),
+          }, "success", "projects"),
           logLine: "Opened /projects",
           meta: { canonicalCommand: "/projects" },
         }),
@@ -134,10 +136,10 @@ export function createCommandRegistry(): CommandDefinition[] {
       handler: (parsed, context) => {
         if (!parsed.argText) {
           return createExecution({
-            modal: createModal("projectList", "Projects", "", {
-              heading: "Available Project Slugs",
-              projects: context.portfolio.projects,
-            }),
+          modal: createModal("projectList", "Projects", "", {
+            heading: "Available Project Slugs",
+            projects: context.portfolio.projects,
+          }, "success", "projects"),
             logLine: "Opened /project directory",
             meta: { canonicalCommand: "/project" },
           });
@@ -157,7 +159,7 @@ export function createCommandRegistry(): CommandDefinition[] {
         }
 
         return createExecution({
-          modal: createModal("projectDetail", project.name, "", { project }),
+          modal: createModal("projectDetail", project.name, "", { project }, "success", `projects/${project.slug}`),
           logLine: `Opened /project ${project.slug}`,
           meta: { canonicalCommand: `/project ${project.slug}` },
         });
@@ -205,7 +207,9 @@ export function createCommandRegistry(): CommandDefinition[] {
                 ? selectedGroup.summary
                 : "Languages, frameworks, tooling, and startup/product strengths.",
               groups,
-            }
+            },
+            "success",
+            selectedGroup ? `skills/${selectedGroup.key}` : "skills"
           ),
           logLine: selectedGroup ? `Opened /skills ${selectedGroup.key}` : "Opened /skills",
           meta: {
@@ -229,7 +233,7 @@ export function createCommandRegistry(): CommandDefinition[] {
               "Email is the fastest path. GitHub, LinkedIn, and my resume are one click away.",
             contact: context.portfolio.contact,
             quickLinks: context.portfolio.quickLinks,
-          }),
+          }, "success", "contact"),
           logLine: "Opened /contact",
           meta: { canonicalCommand: "/contact" },
         }),
@@ -260,7 +264,7 @@ export function createCommandRegistry(): CommandDefinition[] {
                 download: true,
               },
             ],
-          }),
+          }, "success", "resume"),
           logLine: "Opened /resume",
           meta: { canonicalCommand: "/resume" },
         }),
@@ -283,7 +287,8 @@ export function createCommandRegistry(): CommandDefinition[] {
               hint: "Type / to browse.",
               commands: makeHelpCommands(context.registry),
             },
-            "info"
+            "info",
+            "help"
           ),
           logLine: "Opened /help",
           meta: { canonicalCommand: "/help" },
@@ -321,7 +326,8 @@ export function createCommandRegistry(): CommandDefinition[] {
               message: "Thanks for visiting my portfolio! Hope you enjoyed exploring.",
               hint: "Returning to start in 10 seconds...",
             },
-            "info"
+            "info",
+            "exit"
           ),
           logLine: "Session ended.",
           meta: { canonicalCommand: "/exit", endSession: true, exitAfterMs: 10_000 },
