@@ -20,7 +20,6 @@ This portfolio reflects that approach through clean UI, motion, and interactivit
 
 - React + Vite
 - Tailwind CSS
-- Framer Motion
 
 ## Features
 
