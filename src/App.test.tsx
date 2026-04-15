@@ -415,6 +415,8 @@ describe("App", () => {
       expect(screen.getByRole("dialog", { name: /Goodbye/ })).toBeInTheDocument();
       expect(screen.getByLabelText("Portfolio command input")).toBeDisabled();
       expect(screen.queryByLabelText("Keyboard navigation help")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("Press Escape to close")).not.toBeInTheDocument();
+      expect(screen.queryByLabelText("Close panel")).not.toBeInTheDocument();
 
       await act(async () => {
         vi.advanceTimersByTime(9_000);

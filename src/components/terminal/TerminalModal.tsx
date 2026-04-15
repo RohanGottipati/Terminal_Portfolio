@@ -12,12 +12,14 @@ interface TerminalModalProps {
   content: ModalContent;
   onClose: () => void;
   onRunCommand: (command: string) => void;
+  dismissible?: boolean;
 }
 
 export function TerminalModal({
   content,
   onClose,
   onRunCommand,
+  dismissible = true,
 }: TerminalModalProps) {
   const bodyRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -43,7 +45,7 @@ export function TerminalModal({
     function focusByDelta(delta: number) {
       const items = getFocusableItems();
       if (!items.length) {
-        focusElement(closeButtonRef.current);
+        focusElement(dismissible ? closeButtonRef.current : panelRef.current);
         return;
       }
 
@@ -64,7 +66,7 @@ export function TerminalModal({
     }
 
     function handleKeyDown(event: globalThis.KeyboardEvent) {
-      if (event.key === "Escape") {
+      if (dismissible && event.key === "Escape") {
         event.preventDefault();
         onClose();
         return;
@@ -84,7 +86,7 @@ export function TerminalModal({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
+  }, [dismissible, onClose]);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -99,14 +101,16 @@ export function TerminalModal({
       }
 
       try {
-        closeButtonRef.current?.focus({ preventScroll: true });
+        const fallbackElement = dismissible ? closeButtonRef.current : panelRef.current;
+        fallbackElement?.focus({ preventScroll: true });
       } catch {
-        closeButtonRef.current?.focus();
+        const fallbackElement = dismissible ? closeButtonRef.current : panelRef.current;
+        fallbackElement?.focus();
       }
     });
 
     return () => window.cancelAnimationFrame(frame);
-  }, [content.title, content.type]);
+  }, [content.title, content.type, dismissible]);
 
   return (
     <motion.div
@@ -115,13 +119,14 @@ export function TerminalModal({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      onMouseDown={onClose}
+      onMouseDown={dismissible ? onClose : undefined}
     >
       <motion.div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label={content.title}
+        tabIndex={-1}
         className="modal-panel"
         initial={{ opacity: 0, y: 22, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -135,22 +140,24 @@ export function TerminalModal({
               ~/portfolio/rohan-shell{content.path ? `/${content.path}` : ""}
             </p>
           </div>
-          <div className="modal-header-controls">
-            <span className="modal-shortcut-hint" aria-label="Press Escape to close">
-              Esc
-            </span>
-            <Button
-              ref={closeButtonRef}
-              type="button"
-              variant="terminalIcon"
-              size="icon"
-              className="modal-close"
-              onClick={onClose}
-              aria-label="Close panel"
-            >
-              <X size={16} />
-            </Button>
-          </div>
+          {dismissible ? (
+            <div className="modal-header-controls">
+              <span className="modal-shortcut-hint" aria-label="Press Escape to close">
+                Esc
+              </span>
+              <Button
+                ref={closeButtonRef}
+                type="button"
+                variant="terminalIcon"
+                size="icon"
+                className="modal-close"
+                onClick={onClose}
+                aria-label="Close panel"
+              >
+                <X size={16} />
+              </Button>
+            </div>
+          ) : null}
         </header>
 
         <div className="modal-body" ref={bodyRef}>

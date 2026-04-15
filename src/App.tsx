@@ -1069,6 +1069,7 @@ export default function App() {
         {state.activeModal ? (
           <TerminalModal
             content={state.activeModal}
+            dismissible={state.phase !== "exiting"}
             onClose={closeModal}
             onRunCommand={runCommand}
           />
