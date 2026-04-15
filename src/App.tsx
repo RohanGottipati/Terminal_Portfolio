@@ -667,7 +667,7 @@ export default function App() {
                 })
               }
               onKeyDown={(event) => {
-                if (event.key === "ArrowDown" && state.isMenuOpen) {
+                if (event.key === "ArrowDown" && state.isMenuOpen && state.recallIndex === -1) {
                   event.preventDefault();
                   dispatch({
                     type: "set-selected-suggestion",
@@ -679,7 +679,7 @@ export default function App() {
                   return;
                 }
 
-                if (event.key === "ArrowUp" && state.isMenuOpen) {
+                if (event.key === "ArrowUp" && state.isMenuOpen && state.recallIndex === -1) {
                   event.preventDefault();
                   dispatch({
                     type: "set-selected-suggestion",
