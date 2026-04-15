@@ -443,7 +443,7 @@ function HelpRenderer({
         <kbd>↓</kbd>
         <span>and close with</span>
         <kbd>Esc</kbd>
-        <span>if you'd like.</span>
+        <span>if you'd like!</span>
       </div>
       <p className="panel-copy">{payload.message}</p>
       {payload.hint ? <p className="panel-muted-copy">{payload.hint}</p> : null}
