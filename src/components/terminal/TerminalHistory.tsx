@@ -16,11 +16,7 @@ function formatTimestamp(value: number) {
 
 export function TerminalHistory({ history }: TerminalHistoryProps) {
   if (!history.length) {
-    return (
-      <div className="terminal-empty-state">
-        <p>Run a command to open a panel.</p>
-      </div>
-    );
+    return null;
   }
 
   return (

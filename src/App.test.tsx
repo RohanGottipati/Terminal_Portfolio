@@ -146,6 +146,10 @@ describe("App", () => {
       "href",
       "/resume.pdf"
     );
+    expect(chrome.getByText("Email")).toBeInTheDocument();
+    expect(chrome.getByText("GitHub")).toBeInTheDocument();
+    expect(chrome.getByText("LinkedIn")).toBeInTheDocument();
+    expect(chrome.getByText("Resume")).toBeInTheDocument();
   });
 
   it("supports navigating back to /projects from project detail", async () => {

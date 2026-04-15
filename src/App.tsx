@@ -77,23 +77,27 @@ const BOOT_LINES = [
 const WINDOW_ACTIONS = [
   {
     label: "Email Rohan",
+    tooltip: "Email",
     href: `mailto:${portfolioData.contact.email}`,
     Icon: Mail,
   },
   {
     label: "View GitHub profile",
+    tooltip: "GitHub",
     href: portfolioData.contact.github,
     Icon: Github,
     openInNewTab: true,
   },
   {
     label: "View LinkedIn profile",
+    tooltip: "LinkedIn",
     href: portfolioData.contact.linkedin,
     Icon: Linkedin,
     openInNewTab: true,
   },
   {
     label: "Open resume PDF",
+    tooltip: "Resume",
     href: portfolioData.contact.resume,
     Icon: FileText,
     openInNewTab: true,
@@ -722,16 +726,18 @@ export default function App() {
             </div>
             <span className="terminal-window-title">rohan shell v1.3.2</span>
             <div className="terminal-window-actions" aria-label="Contact shortcuts">
-              {WINDOW_ACTIONS.map(({ label, href, Icon, openInNewTab }) => (
+              {WINDOW_ACTIONS.map(({ label, tooltip, href, Icon, openInNewTab }) => (
                 <a
                   key={label}
                   href={href}
                   className="terminal-window-action"
                   aria-label={label}
-                  title={label}
                   {...(openInNewTab ? { target: "_blank", rel: "noreferrer" } : {})}
                 >
                   <Icon size={16} aria-hidden="true" />
+                  <span className="terminal-window-action-label" aria-hidden="true">
+                    {tooltip}
+                  </span>
                 </a>
               ))}
             </div>
