@@ -680,11 +680,17 @@ export default function App() {
         return;
       }
 
-      const target = event.target as HTMLElement | null;
-      const isDocumentSurface =
-        target === document.body || target === document.documentElement;
+      if (event.defaultPrevented) {
+        return;
+      }
 
-      if (!isDocumentSurface) {
+      const activeElement = document.activeElement;
+      if (
+        activeElement instanceof HTMLElement &&
+        (activeElement.classList.contains("terminal-input") ||
+          activeElement.isContentEditable ||
+          activeElement.matches("input, textarea, select"))
+      ) {
         return;
       }
 

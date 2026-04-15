@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import App from "@/App";
@@ -215,6 +215,28 @@ describe("App", () => {
     await user.keyboard("{ArrowDown}");
     await waitFor(() => {
       expect(screen.getByRole("link", { name: "View GitHub profile" })).toHaveFocus();
+    });
+  });
+
+  it("starts arrow-key navigation from the window surface when the input is not focused", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
+
+    const input = screen.getByLabelText("Portfolio command input");
+    await waitFor(() => {
+      expect(input).toHaveFocus();
+    });
+
+    await act(async () => {
+      input.blur();
+      fireEvent.keyDown(window, { key: "ArrowDown" });
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole("link", { name: "Email Rohan" })).toHaveFocus();
     });
   });
 
