@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -9,9 +9,11 @@ import {
   FileText,
   Github,
   Linkedin,
+  type LucideIcon,
   Mail,
 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import type { PortfolioLink } from "@/types/portfolio";
 import type {
   ContactPayload,
@@ -46,11 +48,35 @@ function linkIcon(kind: PortfolioLink["kind"]) {
   }
 }
 
+function ActionButtonContent({
+  icon: Icon,
+  label,
+  trailingIcon,
+}: {
+  icon: LucideIcon;
+  label: string;
+  trailingIcon?: ReactNode;
+}) {
+  return (
+    <>
+      <span className="inline-flex items-center justify-center transition-transform duration-300 group-hover/button:-translate-y-0.5 group-hover/button:scale-105">
+        <Icon size={15} aria-hidden="true" />
+      </span>
+      <span className="relative z-[1]">{label}</span>
+      {trailingIcon ? (
+        <span className="inline-flex items-center justify-center transition-transform duration-300 group-hover/button:translate-x-1">
+          {trailingIcon}
+        </span>
+      ) : null}
+    </>
+  );
+}
+
 function IntroRenderer({ payload }: { payload: IntroPayload }) {
   return (
     <div className="panel-stack">
       {payload.eyebrow ? <p className="panel-eyebrow">{payload.eyebrow}</p> : null}
-      {payload.heading ? <p className="panel-heading">{payload.heading}</p> : null}
+      {payload.heading ? <h2 className="panel-heading">{payload.heading}</h2> : null}
 
       {payload.roleLines?.length ? (
         <div className="panel-role-list">
@@ -101,7 +127,11 @@ function TimelineEntry({
   hideOrg?: boolean;
 }) {
   return (
-    <article className="panel-timeline-entry" tabIndex={0}>
+    <article
+      className="panel-timeline-entry"
+      tabIndex={0}
+      aria-label={`${entry.title} at ${entry.organization}`}
+    >
       <div className="panel-timeline-head">
         <div>
           <h3>{entry.title}</h3>
@@ -130,6 +160,7 @@ function TimelineRenderer({ payload }: { payload: TimelinePayload }) {
 
   return (
     <div className="panel-stack">
+      <h2 className="panel-heading">{payload.heading}</h2>
       {payload.description ? <p className="panel-muted-copy">{payload.description}</p> : null}
 
       <div className="panel-timeline">
@@ -177,22 +208,27 @@ function ProjectListRenderer({
 }) {
   return (
     <div className="panel-stack">
+      <h2 className="panel-heading">{payload.heading}</h2>
       {payload.description ? <p className="panel-muted-copy">{payload.description}</p> : null}
 
       <div className="panel-project-list">
         {payload.projects.map((project) => (
-          <button
+          <Button
             key={project.slug}
             type="button"
-            className="panel-project-row"
+            variant="terminalSurface"
+            size="none"
+            className="panel-project-row before:hidden"
             onClick={() => onRunCommand(`/project ${project.slug}`)}
           >
-            <div className="panel-project-title">
-              <span>{project.name}</span>
-              <span className="panel-project-slug">/project {project.slug}</span>
+            <span className="panel-project-row-indicator panel-project-row-indicator-left" aria-hidden="true">
+              &gt;
+            </span>
+            <div className="panel-project-row-content">
+              <div className="panel-project-title">/project {project.slug}</div>
+              <p>{project.summary}</p>
             </div>
-            <p>{project.summary}</p>
-          </button>
+          </Button>
         ))}
       </div>
     </div>
@@ -210,14 +246,15 @@ function ProjectDetailRenderer({
 
   return (
     <div className="panel-stack panel-stack-tight">
-      <button
+      <Button
         type="button"
-        className="panel-inline-action"
+        variant="terminalInline"
+        size="none"
         onClick={() => onRunCommand("/projects")}
       >
         <ArrowLeft size={14} />
         <span>Back to /projects</span>
-      </button>
+      </Button>
 
       <p className="panel-muted-copy">{project.summary}</p>
 
@@ -244,13 +281,7 @@ function ProjectDetailRenderer({
 
       <section className="panel-section-stack">
         <p className="panel-section-label">Stack</p>
-        <div className="panel-chip-row">
-          {project.stack.map((item) => (
-            <span key={item} className="panel-chip panel-chip-muted">
-              {item}
-            </span>
-          ))}
-        </div>
+        <p className="panel-muted-copy">{project.stack.join(", ")}</p>
       </section>
 
       {project.links.length ? (
@@ -261,17 +292,24 @@ function ProjectDetailRenderer({
               const Icon = linkIcon(link.kind);
 
               return (
-                <a
+                <Button
                   key={`${project.slug}-${link.label}`}
-                  href={link.href}
-                  className="panel-link-button"
-                  target={link.external ? "_blank" : undefined}
-                  rel={link.external ? "noreferrer" : undefined}
+                  variant="terminalLink"
+                  asChild
                 >
-                  <Icon size={15} />
-                  <span>{link.label}</span>
-                  <ArrowUpRight size={14} />
-                </a>
+                  <a
+                    href={link.href}
+                    tabIndex={0}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noreferrer" : undefined}
+                  >
+                    <ActionButtonContent
+                      icon={Icon}
+                      label={link.label}
+                      trailingIcon={<ArrowUpRight size={14} aria-hidden="true" />}
+                    />
+                  </a>
+                </Button>
               );
             })}
           </div>
@@ -284,6 +322,7 @@ function ProjectDetailRenderer({
 function SkillsRenderer({ payload }: { payload: SkillsPayload }) {
   return (
     <div className="panel-stack">
+      <h2 className="panel-heading">{payload.heading}</h2>
       <div className="panel-stack">
         {payload.groups.map((group) => (
           <p key={group.key} className="panel-skill-line">
@@ -317,17 +356,22 @@ function ContactRenderer({
 
   return (
     <div className="panel-stack">
+      <h2 className="panel-heading">{payload.heading}</h2>
+      <p className="panel-muted-copy">{payload.description}</p>
       <div className="panel-mini-card panel-mini-card-centered panel-mini-card-static">
         <p className="panel-section-label">Email</p>
         <div className="panel-link-row panel-link-row-centered">
-          <a href={`mailto:${payload.contact.email}`} className="panel-link-button">
-            <Mail size={15} />
-            <span>{payload.contact.email}</span>
-          </a>
-          <button type="button" className="panel-link-button" onClick={copyEmail}>
-            {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
-            <span>{copied ? "Copied" : "Copy email"}</span>
-          </button>
+          <Button variant="terminalLink" asChild>
+            <a href={`mailto:${payload.contact.email}`} tabIndex={0}>
+              <ActionButtonContent icon={Mail} label={payload.contact.email} />
+            </a>
+          </Button>
+          <Button type="button" variant="terminalLink" onClick={copyEmail}>
+            <ActionButtonContent
+              icon={copied ? CheckCircle2 : Copy}
+              label={copied ? "Copied" : "Copy email"}
+            />
+          </Button>
         </div>
       </div>
 
@@ -339,32 +383,41 @@ function ContactRenderer({
 
             if (link.kind === "resume") {
               return (
-                <button
+                <Button
                   key={link.label}
                   type="button"
-                  className="panel-link-button"
+                  variant="terminalLink"
                   onClick={() => onRunCommand("/resume")}
                 >
-                  <Icon size={15} />
-                  <span>{link.label}</span>
-                  <ArrowUpRight size={14} />
-                </button>
+                  <ActionButtonContent
+                    icon={Icon}
+                    label={link.label}
+                    trailingIcon={<ArrowUpRight size={14} aria-hidden="true" />}
+                  />
+                </Button>
               );
             }
 
             return (
-              <a
+              <Button
                 key={link.label}
-                href={link.href}
-                className="panel-link-button"
-                target={link.external ? "_blank" : undefined}
-                rel={link.external ? "noreferrer" : undefined}
-                download={link.download}
+                variant="terminalLink"
+                asChild
               >
-                <Icon size={15} />
-                <span>{link.label}</span>
-                <ArrowUpRight size={14} />
-              </a>
+                <a
+                  href={link.href}
+                  tabIndex={0}
+                  target={link.external ? "_blank" : undefined}
+                  rel={link.external ? "noreferrer" : undefined}
+                  download={link.download}
+                >
+                  <ActionButtonContent
+                    icon={Icon}
+                    label={link.label}
+                    trailingIcon={<ArrowUpRight size={14} aria-hidden="true" />}
+                  />
+                </a>
+              </Button>
             );
           })}
         </div>
@@ -376,24 +429,32 @@ function ContactRenderer({
 function LinkPanelRenderer({ payload }: { payload: LinkPanelPayload }) {
   return (
     <div className="panel-stack">
+      <h2 className="panel-heading">{payload.heading}</h2>
       <p className="panel-muted-copy">{payload.description}</p>
       <div className="panel-link-row">
         {payload.links.map((link) => {
           const Icon = linkIcon(link.kind);
 
           return (
-            <a
+            <Button
               key={link.label}
-              href={link.href}
-              className="panel-link-button"
-              target={link.external ? "_blank" : undefined}
-              rel={link.external ? "noreferrer" : undefined}
-              download={link.download}
+              variant="terminalLink"
+              asChild
             >
-              <Icon size={15} />
-              <span>{link.label}</span>
-              <ArrowUpRight size={14} />
-            </a>
+              <a
+                href={link.href}
+                tabIndex={0}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noreferrer" : undefined}
+                download={link.download}
+              >
+                <ActionButtonContent
+                  icon={Icon}
+                  label={link.label}
+                  trailingIcon={<ArrowUpRight size={14} aria-hidden="true" />}
+                />
+              </a>
+            </Button>
           );
         })}
       </div>
@@ -404,23 +465,31 @@ function LinkPanelRenderer({ payload }: { payload: LinkPanelPayload }) {
 function ResumePanelRenderer({ payload }: { payload: ResumePanelPayload }) {
   return (
     <div className="panel-stack">
+      <h2 className="panel-heading">{payload.heading}</h2>
       <div className="panel-link-row panel-link-row-centered">
         {payload.links.map((link) => {
           const Icon = linkIcon(link.kind);
 
           return (
-            <a
+            <Button
               key={link.label}
-              href={link.href}
-              className="panel-link-button"
-              target="_blank"
-              rel="noreferrer"
-              download={link.download || undefined}
+              variant="terminalLink"
+              asChild
             >
-              <Icon size={15} />
-              <span>{link.label}</span>
-              <ArrowUpRight size={14} />
-            </a>
+              <a
+                href={link.href}
+                tabIndex={0}
+                target="_blank"
+                rel="noreferrer"
+                download={link.download || undefined}
+              >
+                <ActionButtonContent
+                  icon={Icon}
+                  label={link.label}
+                  trailingIcon={<ArrowUpRight size={14} aria-hidden="true" />}
+                />
+              </a>
+            </Button>
           );
         })}
       </div>
@@ -453,15 +522,22 @@ function HelpRenderer({
       {payload.commands?.length ? (
         <div className="panel-command-list">
           {payload.commands.map((item) => (
-            <button
+            <Button
               key={item.command}
               type="button"
-              className="panel-command-row"
+              variant="terminalSurface"
+              size="none"
+              className="panel-command-row before:hidden"
               onClick={() => onRunCommand(item.command)}
             >
-              <span>{item.command}</span>
-              <span>{item.description}</span>
-            </button>
+              <span className="panel-command-row-indicator" aria-hidden="true">
+                &gt;
+              </span>
+              <div className="panel-command-row-content">
+                <span className="panel-command-row-command">{item.command}</span>
+                <span className="panel-command-row-description">{item.description}</span>
+              </div>
+            </Button>
           ))}
         </div>
       ) : null}

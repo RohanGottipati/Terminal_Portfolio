@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 
 import { OutputRenderer } from "@/components/terminal/OutputRenderer";
+import { Button } from "@/components/ui/button";
 import type { ModalContent } from "@/types/terminal";
 
 const FOCUSABLE = "button:not([disabled]), a[href], [tabindex='0']";
@@ -24,22 +25,42 @@ export function TerminalModal({
 
   useEffect(() => {
     function getFocusableItems() {
-      const panel = panelRef.current;
-      if (!panel) return [];
-      return Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE));
+      const body = bodyRef.current;
+      if (!body) return [];
+      return Array.from(body.querySelectorAll<HTMLElement>(FOCUSABLE));
+    }
+
+    function focusElement(element: HTMLElement | null) {
+      if (!element) return;
+
+      try {
+        element.focus({ preventScroll: true });
+      } catch {
+        element.focus();
+      }
     }
 
     function focusByDelta(delta: number) {
       const items = getFocusableItems();
-      if (!items.length) return;
+      if (!items.length) {
+        focusElement(closeButtonRef.current);
+        return;
+      }
 
-      const currentIndex = Math.max(0, items.indexOf(document.activeElement as HTMLElement));
-      const nextIndex = Math.min(items.length - 1, Math.max(0, currentIndex + delta));
+      const currentIndex = items.indexOf(document.activeElement as HTMLElement);
+      const nextIndex =
+        currentIndex === -1
+          ? delta > 0
+            ? 0
+            : items.length - 1
+          : (currentIndex + delta + items.length) % items.length;
       const next = items[nextIndex];
       if (!next) return;
 
-      next.focus({ preventScroll: true });
-      next.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      focusElement(next);
+      if (typeof next.scrollIntoView === "function") {
+        next.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
     }
 
     function handleKeyDown(event: globalThis.KeyboardEvent) {
@@ -65,13 +86,27 @@ export function TerminalModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  // Keep focus on the close control so content rows are not pre-highlighted.
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      closeButtonRef.current?.focus({ preventScroll: true });
-    }, 250);
-    return () => window.clearTimeout(timer);
-  }, [content.title]);
+    const frame = window.requestAnimationFrame(() => {
+      const firstFocusableItem = bodyRef.current?.querySelector<HTMLElement>(FOCUSABLE);
+      if (firstFocusableItem) {
+        try {
+          firstFocusableItem.focus({ preventScroll: true });
+        } catch {
+          firstFocusableItem.focus();
+        }
+        return;
+      }
+
+      try {
+        closeButtonRef.current?.focus({ preventScroll: true });
+      } catch {
+        closeButtonRef.current?.focus();
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [content.title, content.type]);
 
   return (
     <motion.div
@@ -104,15 +139,17 @@ export function TerminalModal({
             <span className="modal-shortcut-hint" aria-label="Press Escape to close">
               Esc
             </span>
-            <button
+            <Button
               ref={closeButtonRef}
               type="button"
+              variant="terminalIcon"
+              size="icon"
               className="modal-close"
               onClick={onClose}
               aria-label="Close panel"
             >
               <X size={16} />
-            </button>
+            </Button>
           </div>
         </header>
 

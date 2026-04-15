@@ -1,4 +1,5 @@
 import { portfolioData } from "@/data/portfolio";
+import { Button } from "@/components/ui/button";
 
 interface TerminalDashboardProps {
   onRunCommand: (command: string) => void;
@@ -38,15 +39,17 @@ export function TerminalDashboard({
               <p className="dashboard-section-label">Tips for getting started</p>
               <div className="dashboard-command-list">
                 {starterCommands.map(({ command, description }) => (
-                  <button
+                  <Button
                     key={command}
                     type="button"
+                    variant="dashboardRow"
+                    size="none"
                     className="dashboard-command-row"
                     onClick={() => onRunCommand(command)}
                   >
                     <span>{command}</span>
                     <span>{description}</span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -56,14 +59,16 @@ export function TerminalDashboard({
             <div>
               <p className="dashboard-section-label">Most recent achievement</p>
               <div className="dashboard-command-list">
-                <button
+                <Button
                   type="button"
+                  variant="dashboardRow"
+                  size="none"
                   className="dashboard-command-row"
                   onClick={() => onRunCommand("/project caresync")}
                 >
                   <span>Hack Canada Win - CareSync</span>
                   <span>Open project</span>
-                </button>
+                </Button>
               </div>
             </div>
           </div>

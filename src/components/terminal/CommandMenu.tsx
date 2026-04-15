@@ -1,6 +1,7 @@
 import type { RefObject } from "react";
 import { motion } from "framer-motion";
 
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { SuggestionItem } from "@/types/terminal";
 
@@ -28,9 +29,11 @@ export function CommandMenu({
     >
       {suggestions.length ? (
         suggestions.map((item, index) => (
-          <button
+          <Button
             key={item.id}
             type="button"
+            variant="commandMenu"
+            size="none"
             className={cn("command-menu-item", index === selectedIndex && "is-selected")}
             onMouseDown={(event) => {
               event.preventDefault();
@@ -39,7 +42,7 @@ export function CommandMenu({
           >
             <span className="command-menu-label">{item.label}</span>
             <span className="command-menu-description">{item.description}</span>
-          </button>
+          </Button>
         ))
       ) : (
         <div className="command-menu-empty">

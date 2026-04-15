@@ -12,7 +12,7 @@ describe("App", () => {
     const user = userEvent.setup();
     render(<App />);
 
-    expect(screen.getByPlaceholderText("Type rohan to start")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Type rohan, then press Enter")).toBeInTheDocument();
     expect(screen.queryByText("Welcome to Rohan", { exact: false })).not.toBeInTheDocument();
 
     await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
@@ -24,7 +24,7 @@ describe("App", () => {
     const input = screen.getByLabelText("Portfolio command input");
     await user.type(input, "/about{enter}");
 
-    expect(await screen.findByText("Profile")).toBeInTheDocument();
+    expect(await screen.findByRole("dialog", { name: "Profile" })).toBeInTheDocument();
     expect(
       screen.getByText(
         "Bachelor of Computer Science, Big Data Concentration at Wilfrid Laurier University."
@@ -41,10 +41,11 @@ describe("App", () => {
     await user.type(input, "/clear{enter}");
 
     await waitFor(() => {
-      expect(screen.queryByText("Profile")).not.toBeInTheDocument();
+      expect(screen.queryByRole("dialog", { name: "Profile" })).not.toBeInTheDocument();
     });
 
-    expect(screen.getByText("No recent activity")).toBeInTheDocument();
+    expect(screen.getByLabelText("Shell dashboard")).toBeInTheDocument();
+    expect(screen.queryByText("Opened /about")).not.toBeInTheDocument();
   });
 
   it("runs /skills from suggestions with a single enter press", async () => {
@@ -55,7 +56,7 @@ describe("App", () => {
     await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
     await user.type(screen.getByLabelText("Portfolio command input"), "/sk{enter}");
 
-    expect(await screen.findByText("Skills")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Skill Stack" })).toBeInTheDocument();
     expect(screen.getAllByText("Opened /skills").length).toBeGreaterThan(0);
   });
 
@@ -83,7 +84,9 @@ describe("App", () => {
 
     await user.type(screen.getByLabelText("Portfolio command input"), "/experience{enter}");
 
-    expect(await screen.findByText("Experience")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "Experience Timeline" })
+    ).toBeInTheDocument();
     expect(
       screen.queryByText(
         "Delivered interactive product and growth tooling across demos, messaging reliability, and content operations."
@@ -99,26 +102,20 @@ describe("App", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("keeps recent activity limited to the latest three commands", async () => {
+  it("runs /help from the dashboard CTA button", async () => {
     const user = userEvent.setup();
     render(<App />);
 
     await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
     await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
 
-    const input = screen.getByLabelText("Portfolio command input");
-
-    await user.type(input, "/about{enter}");
-    await user.type(input, "/skills{enter}");
-    await user.type(input, "/contact{enter}");
-    await user.type(input, "/help{enter}");
-
     const dashboard = within(screen.getByLabelText("Shell dashboard"));
+    await user.click(dashboard.getByRole("button", { name: /\/help/i }));
 
-    expect(dashboard.getByText("Opened /help")).toBeInTheDocument();
-    expect(dashboard.getByText("Opened /contact")).toBeInTheDocument();
-    expect(dashboard.getByText("Opened /skills")).toBeInTheDocument();
-    expect(dashboard.queryByText("Opened /about")).not.toBeInTheDocument();
+    expect(
+      await screen.findByRole("dialog", { name: "Command Directory" })
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("Opened /help").length).toBeGreaterThan(0);
   });
 
   it("shows top-right contact shortcuts in the terminal chrome", async () => {
@@ -152,6 +149,125 @@ describe("App", () => {
     expect(chrome.getByText("Resume")).toBeInTheDocument();
   });
 
+  it("recalls previous commands with ArrowUp from the terminal input", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
+
+    await user.type(screen.getByLabelText("Portfolio command input"), "/help{enter}");
+    const dialog = await screen.findByRole("dialog", { name: "Command Directory" });
+
+    await user.keyboard("{Escape}");
+
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument();
+    });
+
+    const input = screen.getByLabelText("Portfolio command input");
+    await waitFor(() => {
+      expect(input).toHaveFocus();
+    });
+
+    await user.type(input, "/about{enter}");
+    const profileDialog = await screen.findByRole("dialog", { name: "Profile" });
+
+    await user.keyboard("{Escape}");
+
+    await waitFor(() => {
+      expect(profileDialog).not.toBeInTheDocument();
+    });
+
+    await user.keyboard("{ArrowUp}");
+    expect(input).toHaveValue("/about");
+
+    await user.keyboard("{ArrowUp}");
+    expect(input).toHaveValue("/help");
+  });
+
+  it("supports arrow-key navigation across shell controls after commands have run", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
+
+    await user.type(screen.getByLabelText("Portfolio command input"), "/about{enter}");
+    const dialog = await screen.findByRole("dialog", { name: "Profile" });
+
+    await user.keyboard("{Escape}");
+
+    await waitFor(() => {
+      expect(dialog).not.toBeInTheDocument();
+    });
+
+    const input = screen.getByLabelText("Portfolio command input");
+    await waitFor(() => {
+      expect(input).toHaveFocus();
+    });
+
+    await user.keyboard("{ArrowDown}");
+    await waitFor(() => {
+      expect(screen.getByRole("link", { name: "Email Rohan" })).toHaveFocus();
+    });
+
+    await user.keyboard("{ArrowDown}");
+    await waitFor(() => {
+      expect(screen.getByRole("link", { name: "View GitHub profile" })).toHaveFocus();
+    });
+  });
+
+  it("focuses the first contact action and moves through contact actions with arrow keys", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
+
+    await user.type(screen.getByLabelText("Portfolio command input"), "/contact{enter}");
+
+    const dialog = await screen.findByRole("dialog", { name: "Contact" });
+    const scoped = within(dialog);
+    const emailLink = scoped.getByRole("link", { name: "rohan.gottipati@gmail.com" });
+    const copyButton = scoped.getByRole("button", { name: "Copy email" });
+
+    await waitFor(() => {
+      expect(emailLink).toHaveFocus();
+    });
+
+    await user.keyboard("{ArrowDown}");
+
+    await waitFor(() => {
+      expect(copyButton).toHaveFocus();
+    });
+  });
+
+  it("focuses the first help command and moves through help commands with arrow keys", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
+
+    await user.type(screen.getByLabelText("Portfolio command input"), "/help{enter}");
+
+    const dialog = await screen.findByRole("dialog", { name: "Command Directory" });
+    const scoped = within(dialog);
+    const aboutCommand = scoped.getByRole("button", { name: /\/about/i });
+    const experienceCommand = scoped.getByRole("button", { name: /\/experience/i });
+
+    await waitFor(() => {
+      expect(aboutCommand).toHaveFocus();
+    });
+
+    await user.keyboard("{ArrowDown}");
+
+    await waitFor(() => {
+      expect(experienceCommand).toHaveFocus();
+    });
+  });
+
   it("supports navigating back to /projects from project detail", async () => {
     const user = userEvent.setup();
     render(<App />);
@@ -165,6 +281,81 @@ describe("App", () => {
     await user.click(screen.getByRole("button", { name: "Back to /projects" }));
     await waitFor(() => {
       expect(screen.getAllByText("/project spectra").length).toBeGreaterThan(0);
+    });
+  });
+
+  it("supports arrow-key navigation through the project list", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
+
+    await user.type(screen.getByLabelText("Portfolio command input"), "/projects{enter}");
+
+    const dialog = await screen.findByRole("dialog", { name: "Projects" });
+    const scoped = within(dialog);
+    const firstProject = scoped.getByRole("button", { name: /\/project spectra/i });
+    const secondProject = scoped.getByRole("button", { name: /\/project caresync/i });
+
+    await waitFor(() => {
+      expect(firstProject).toHaveFocus();
+    });
+
+    await user.keyboard("{ArrowDown}");
+
+    await waitFor(() => {
+      expect(secondProject).toHaveFocus();
+    });
+  });
+
+  it("focuses resume actions and moves through them with arrow keys", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
+
+    await user.type(screen.getByLabelText("Portfolio command input"), "/resume{enter}");
+
+    const dialog = await screen.findByRole("dialog", { name: "Resume" });
+    const scoped = within(dialog);
+    const openLink = scoped.getByRole("link", { name: "Open in new page" });
+    const downloadLink = scoped.getByRole("link", { name: "Download PDF" });
+
+    await waitFor(() => {
+      expect(openLink).toHaveFocus();
+    });
+
+    await user.keyboard("{ArrowDown}");
+
+    await waitFor(() => {
+      expect(downloadLink).toHaveFocus();
+    });
+  });
+
+  it("focuses the first experience entry and moves through entries with arrow keys", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
+
+    await user.type(screen.getByLabelText("Portfolio command input"), "/experience{enter}");
+
+    const dialog = await screen.findByRole("dialog", { name: "Experience" });
+    const scoped = within(dialog);
+    const firstEntry = scoped.getByLabelText("Junior Software Developer at DOUBL");
+    const secondEntry = scoped.getByLabelText("Software Developer Intern at DOUBL");
+
+    await waitFor(() => {
+      expect(firstEntry).toHaveFocus();
+    });
+
+    await user.keyboard("{ArrowDown}");
+
+    await waitFor(() => {
+      expect(secondEntry).toHaveFocus();
     });
   });
 
@@ -182,6 +373,31 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Open in new page" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Download PDF" })).toBeInTheDocument();
+  });
+
+  it("renders project detail CTA links with the expected hrefs", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(screen.getByLabelText("Startup input"), "rohan{enter}");
+    await screen.findByText("Welcome to Rohan", { exact: false }, { timeout: 3500 });
+
+    await user.type(screen.getByLabelText("Portfolio command input"), "/project spectra{enter}");
+
+    const dialog = await screen.findByRole("dialog", { name: "Spectra" });
+    const scoped = within(dialog);
+
+    expect(scoped.getByRole("link", { name: "GitHub" })).toHaveAttribute(
+      "href",
+      "https://github.com/RohanGottipati/Spectra"
+    );
+    expect(
+      scoped.getByText("Next.js, React, TypeScript, Solana Web3.js, Supabase")
+    ).toBeInTheDocument();
+    expect(scoped.getByRole("link", { name: "Devpost" })).toHaveAttribute(
+      "href",
+      "https://devpost.com/software/s-e-n-t-r-a"
+    );
   });
 
   it("locks the terminal on /exit and auto-closes the window after 10 seconds", async () => {

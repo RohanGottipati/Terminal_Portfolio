@@ -2,6 +2,7 @@ import {
   startTransition,
   useDeferredValue,
   useEffect,
+  useLayoutEffect,
   useReducer,
   useRef,
   useState,
@@ -14,6 +15,7 @@ import { TerminalDashboard } from "@/components/terminal/TerminalDashboard";
 import { TerminalHistory } from "@/components/terminal/TerminalHistory";
 import { TerminalInput } from "@/components/terminal/TerminalInput";
 import { TerminalModal } from "@/components/terminal/TerminalModal";
+import { Button } from "@/components/ui/button";
 import { portfolioData } from "@/data/portfolio";
 import {
   createSessionLogEntry,
@@ -80,6 +82,7 @@ const WINDOW_ACTIONS = [
     tooltip: "Email",
     href: `mailto:${portfolioData.contact.email}`,
     Icon: Mail,
+    openInNewTab: false,
   },
   {
     label: "View GitHub profile",
@@ -186,8 +189,8 @@ function reducer(state: AppState, action: AppAction): AppState {
         ...state,
         input: action.value,
         recallIndex: action.index,
-        isMenuOpen: action.value.trimStart().startsWith("/"),
-        selectedSuggestionIndex: action.value.trimStart().startsWith("/") ? -1 : state.selectedSuggestionIndex,
+        isMenuOpen: false,
+        selectedSuggestionIndex: -1,
       };
     case "set-startup-error":
       return {
@@ -233,6 +236,7 @@ function reducer(state: AppState, action: AppAction): AppState {
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [isModalClosing, setIsModalClosing] = useState(false);
   const [locationIndex, setLocationIndex] = useState(0);
   const [typedLocation, setTypedLocation] = useState(LOCATIONS[0]);
   const [isDeletingLocation, setIsDeletingLocation] = useState(false);
@@ -247,11 +251,15 @@ export default function App() {
   const menuWasOpenRef = useRef(false);
   const menuScrollRestoreRef = useRef<number | null>(null);
   const exitTimeoutRef = useRef<number | null>(null);
+  const panelFocusTimeoutRef = useRef<number | null>(null);
+  const panelFocusIndexRef = useRef(-1);
+  const modalRestoreFocusTimeoutRef = useRef<number | null>(null);
 
   const suggestions =
     state.phase === "ready"
       ? getSuggestions(deferredInput, commandRegistry, portfolioData)
       : [];
+  const hasBlockingModal = Boolean(state.activeModal) || isModalClosing;
 
   function canUseWindowScroll() {
     return typeof navigator === "undefined" || !/jsdom/i.test(navigator.userAgent);
@@ -266,6 +274,29 @@ export default function App() {
       top: Math.max(0, top),
       behavior: "smooth",
     });
+  }
+
+  function focusElement(element: HTMLElement | null) {
+    if (!element) {
+      return;
+    }
+
+    try {
+      element.focus({ preventScroll: true });
+    } catch {
+      element.focus();
+    }
+  }
+
+  function queuePanelFocus(direction: "up" | "down") {
+    if (panelFocusTimeoutRef.current !== null) {
+      window.clearTimeout(panelFocusTimeoutRef.current);
+    }
+
+    panelFocusTimeoutRef.current = window.setTimeout(() => {
+      panelFocusTimeoutRef.current = null;
+      focusPanelItem(direction);
+    }, 0);
   }
 
 
@@ -295,6 +326,47 @@ export default function App() {
 
     return () => window.clearTimeout(timeout);
   }, [isDeletingLocation, locationIndex, typedLocation]);
+
+  useEffect(() => {
+    return () => {
+      if (panelFocusTimeoutRef.current !== null) {
+        window.clearTimeout(panelFocusTimeoutRef.current);
+      }
+      if (modalRestoreFocusTimeoutRef.current !== null) {
+        window.clearTimeout(modalRestoreFocusTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel) {
+      return;
+    }
+
+    function handleFocusIn(event: FocusEvent) {
+      const target = event.target as HTMLElement | null;
+      if (!target || target.classList.contains("terminal-input")) {
+        return;
+      }
+
+      if (modalRestoreFocusTimeoutRef.current !== null) {
+        window.clearTimeout(modalRestoreFocusTimeoutRef.current);
+        modalRestoreFocusTimeoutRef.current = null;
+      }
+
+      const items = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+        (element) => !element.classList.contains("terminal-input")
+      );
+      const nextIndex = items.indexOf(target);
+      if (nextIndex !== -1) {
+        panelFocusIndexRef.current = nextIndex;
+      }
+    }
+
+    panel.addEventListener("focusin", handleFocusIn);
+    return () => panel.removeEventListener("focusin", handleFocusIn);
+  }, [state.phase]);
 
   useEffect(() => {
     if (state.phase !== "booting") {
@@ -556,9 +628,9 @@ export default function App() {
       runCommand(state.modalBackCommand, { urlMode: "replace" });
       return;
     }
+    setIsModalClosing(true);
     dispatch({ type: "close-modal" });
     replaceCommandInUrl(null);
-    window.requestAnimationFrame(() => inputRef.current?.focus());
   }
 
   function focusPanelItem(direction: "up" | "down") {
@@ -572,19 +644,57 @@ export default function App() {
 
     const active = document.activeElement as HTMLElement | null;
     const currentIndex = active ? items.indexOf(active) : -1;
+    const rememberedIndex =
+      active === document.body || active === document.documentElement
+        ? panelFocusIndexRef.current
+        : -1;
+    const baseIndex = currentIndex === -1 ? rememberedIndex : currentIndex;
 
     const nextIndex =
       direction === "down"
-        ? Math.min(items.length - 1, currentIndex === -1 ? 0 : currentIndex + 1)
-        : Math.max(0, currentIndex === -1 ? items.length - 1 : currentIndex - 1);
+        ? Math.min(items.length - 1, baseIndex === -1 ? 0 : baseIndex + 1)
+        : Math.max(0, baseIndex === -1 ? items.length - 1 : baseIndex - 1);
 
     const next = items[nextIndex];
     if (!next) return false;
 
-    next.focus({ preventScroll: true });
-    next.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    panelFocusIndexRef.current = nextIndex;
+    focusElement(next);
+    if (typeof next.scrollIntoView === "function") {
+      next.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
     return true;
   }
+
+  useLayoutEffect(() => {
+    if (state.phase !== "ready" || hasBlockingModal || state.isMenuOpen) {
+      return;
+    }
+
+    function handlePanelArrowNavigation(event: KeyboardEvent) {
+      if (event.altKey || event.ctrlKey || event.metaKey) {
+        return;
+      }
+
+      if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
+        return;
+      }
+
+      const target = event.target as HTMLElement | null;
+      const isDocumentSurface =
+        target === document.body || target === document.documentElement;
+
+      if (!isDocumentSurface) {
+        return;
+      }
+
+      event.preventDefault();
+      queuePanelFocus(event.key === "ArrowDown" ? "down" : "up");
+    }
+
+    window.addEventListener("keydown", handlePanelArrowNavigation);
+    return () => window.removeEventListener("keydown", handlePanelArrowNavigation);
+  }, [hasBlockingModal, state.isMenuOpen, state.phase]);
 
   useEffect(() => {
     if (hasHydratedRef.current) {
@@ -612,7 +722,7 @@ export default function App() {
       const command = getCommandFromUrl();
 
       if (!command) {
-        dispatch({ type: "close-modal" });
+        closeModal();
         return;
       }
 
@@ -626,7 +736,7 @@ export default function App() {
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [state.phase]);
+  }, [state.phase, state.modalBackCommand]);
 
   const currentLocation = typedLocation || "\u00a0";
   const isIdleShell = state.sessionLog.length === 0;
@@ -717,6 +827,31 @@ export default function App() {
         <section
           ref={panelRef}
           className={cn("terminal-panel", isIdleShell && "is-idle")}
+          onKeyDownCapture={(event) => {
+            if (
+              state.phase !== "ready" ||
+              hasBlockingModal ||
+              state.isMenuOpen ||
+              event.altKey ||
+              event.ctrlKey ||
+              event.metaKey ||
+              (event.key !== "ArrowUp" && event.key !== "ArrowDown")
+            ) {
+              return;
+            }
+
+            const target = event.target as HTMLElement | null;
+            if (!target || target.classList.contains("terminal-input")) {
+              return;
+            }
+
+            if (!panelRef.current?.contains(target)) {
+              return;
+            }
+
+            event.preventDefault();
+            queuePanelFocus(event.key === "ArrowDown" ? "down" : "up");
+          }}
         >
           <div className="terminal-window-chrome" role="group" aria-label="Terminal window">
             <div className="terminal-window-dots" aria-hidden="true">
@@ -727,18 +862,25 @@ export default function App() {
             <span className="terminal-window-title">rohan shell v1.3.2</span>
             <div className="terminal-window-actions" aria-label="Contact shortcuts">
               {WINDOW_ACTIONS.map(({ label, tooltip, href, Icon, openInNewTab }) => (
-                <a
+                <Button
                   key={label}
-                  href={href}
+                  variant="terminalIcon"
+                  size="icon"
+                  asChild
                   className="terminal-window-action"
-                  aria-label={label}
-                  {...(openInNewTab ? { target: "_blank", rel: "noreferrer" } : {})}
                 >
-                  <Icon size={16} aria-hidden="true" />
-                  <span className="terminal-window-action-label" aria-hidden="true">
-                    {tooltip}
-                  </span>
-                </a>
+                  <a
+                    href={href}
+                    aria-label={label}
+                    tabIndex={0}
+                    {...(openInNewTab ? { target: "_blank", rel: "noreferrer" } : {})}
+                  >
+                    <Icon size={16} aria-hidden="true" />
+                    <span className="terminal-window-action-label" aria-hidden="true">
+                      {tooltip}
+                    </span>
+                  </a>
+                </Button>
               ))}
             </div>
           </div>
@@ -856,36 +998,33 @@ export default function App() {
                 }
 
                 if (event.key === "ArrowUp") {
-                  event.preventDefault();
-                  if (
-                    !state.isMenuOpen &&
-                    !state.activeModal &&
-                    isIdleShell &&
-                    state.input.length === 0 &&
-                    state.submittedHistory.length === 0
-                  ) {
-                    focusPanelItem("up");
+                  if (!state.isMenuOpen && !state.activeModal && state.submittedHistory.length) {
+                    event.preventDefault();
+                    recallCommand("up");
                     return;
                   }
 
-                  recallCommand("up");
-                  return;
+                  if (!state.isMenuOpen && !state.activeModal && state.input.length === 0) {
+                    event.preventDefault();
+                    inputRef.current?.blur();
+                    queuePanelFocus("up");
+                    return;
+                  }
                 }
 
                 if (event.key === "ArrowDown") {
-                  event.preventDefault();
-                  if (
-                    !state.isMenuOpen &&
-                    !state.activeModal &&
-                    isIdleShell &&
-                    state.input.length === 0 &&
-                    state.submittedHistory.length === 0
-                  ) {
-                    focusPanelItem("down");
+                  if (!state.isMenuOpen && !state.activeModal && state.recallIndex !== -1) {
+                    event.preventDefault();
+                    recallCommand("down");
                     return;
                   }
 
-                  recallCommand("down");
+                  if (!state.isMenuOpen && !state.activeModal && state.input.length === 0) {
+                    event.preventDefault();
+                    inputRef.current?.blur();
+                    queuePanelFocus("down");
+                    return;
+                  }
                 }
               }}
             />
@@ -904,7 +1043,29 @@ export default function App() {
         </AnimatePresence>
       </motion.div>
 
-      <AnimatePresence>
+      <AnimatePresence
+        onExitComplete={() => {
+          setIsModalClosing(false);
+          if (modalRestoreFocusTimeoutRef.current !== null) {
+            window.clearTimeout(modalRestoreFocusTimeoutRef.current);
+          }
+
+          modalRestoreFocusTimeoutRef.current = window.setTimeout(() => {
+            modalRestoreFocusTimeoutRef.current = null;
+            const activeElement = document.activeElement as HTMLElement | null;
+            const panel = panelRef.current;
+            const isShellControlFocused =
+              !!activeElement &&
+              !!panel &&
+              panel.contains(activeElement) &&
+              !activeElement.classList.contains("terminal-input");
+
+            if (!isShellControlFocused) {
+              inputRef.current?.focus();
+            }
+          }, 0);
+        }}
+      >
         {state.activeModal ? (
           <TerminalModal
             content={state.activeModal}
