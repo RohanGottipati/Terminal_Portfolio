@@ -1,16 +1,17 @@
-# Rohan Gottipati - Portfolio
+rohangottipati.com
+> initializing rohan...
+> loading experience...
+> loading projects...
+> ready.
+An interactive, terminal-inspired developer portfolio designed to feel like a system you explore, not just a page you scroll.
+Built entirely from scratch to showcase my work, technical skills, and approach to building products.
 
-This is my personal developer portfolio built using React, Three.js, and Tailwind CSS. I designed and coded everything from scratch to showcase my projects, skills, and creativity in an interactive 3D experience.
+Features
+Terminal-style interface
+Interactive project and skill exploration
+Smooth transitions and motion design
+Fully responsive
 
-⚙️ Tech
-- React + Vite
-- Three.js (via React Three Fiber)
-- Tailwind CSS
-- Framer Motion
-
-🚀 Features
-- 3D hero section with animations
-- Interactive project and skill cards
-- Fully responsive
-
-
+Run Locally
+npm install
+npm run dev
