@@ -317,7 +317,7 @@ function ContactRenderer({
 
   return (
     <div className="panel-stack">
-      <div className="panel-mini-card panel-mini-card-centered">
+      <div className="panel-mini-card panel-mini-card-centered panel-mini-card-static">
         <p className="panel-section-label">Email</p>
         <div className="panel-link-row panel-link-row-centered">
           <a href={`mailto:${payload.contact.email}`} className="panel-link-button">
@@ -331,7 +331,7 @@ function ContactRenderer({
         </div>
       </div>
 
-      <div className="panel-mini-card panel-mini-card-centered">
+      <div className="panel-mini-card panel-mini-card-centered panel-mini-card-static">
         <p className="panel-section-label">Links</p>
         <div className="panel-link-row panel-link-row-centered">
           {payload.quickLinks.map((link) => {
