@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 
 import { OutputRenderer } from "@/components/terminal/OutputRenderer";
@@ -33,6 +33,7 @@ export function TerminalModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       onMouseDown={onClose}
     >
       <motion.div
@@ -40,10 +41,10 @@ export function TerminalModal({
         aria-modal="true"
         aria-label={content.title}
         className="modal-panel"
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 18 }}
-        transition={{ duration: 0.18 }}
+        initial={{ opacity: 0, y: 22, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 14, scale: 0.99 }}
+        transition={{ type: "spring", damping: 28, stiffness: 340, mass: 0.75 }}
         onMouseDown={(event) => event.stopPropagation()}
       >
         <header className="modal-header">
@@ -67,7 +68,17 @@ export function TerminalModal({
         </header>
 
         <div className="modal-body">
-          <OutputRenderer content={content} onRunCommand={onRunCommand} />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={content.title}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <OutputRenderer content={content} onRunCommand={onRunCommand} />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </motion.div>
     </motion.div>

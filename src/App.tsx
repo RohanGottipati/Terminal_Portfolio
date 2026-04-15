@@ -561,7 +561,12 @@ export default function App() {
 
   if (state.phase === "locked") {
     return (
-      <div className="app-shell startup-shell">
+      <motion.div
+        className="app-shell startup-shell"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
         <div className="startup-shell-inner">
           <TerminalInput
             value={state.input}
@@ -599,32 +604,43 @@ export default function App() {
 
           {state.startupError ? <p className="startup-error">{state.startupError}</p> : null}
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   if (state.phase === "booting") {
     return (
-      <div className="app-shell startup-shell">
+      <motion.div
+        className="app-shell startup-shell"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+      >
         <div className="boot-sequence" aria-live="polite">
           {state.bootLines.map((line, index) => (
             <motion.p
               key={`${line}-${index}`}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               className="boot-line"
             >
               {line}
             </motion.p>
           ))}
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
     <div className="app-shell">
-      <div className="app-frame">
+      <motion.div
+        className="app-frame"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+      >
         <section className={cn("terminal-panel", isIdleShell && "is-idle")}>
           <div
             ref={historyRef}
@@ -698,7 +714,9 @@ export default function App() {
                       (item) => item.value.toLowerCase() === normalized.toLowerCase()
                     );
                     const exactCommand =
-                      parsed && !parsed.argText ? resolveCommand(parsed) : null;
+                      parsed && !parsed.argText && !state.input.trimStart().endsWith(" ")
+                        ? resolveCommand(parsed)
+                        : null;
 
                     if (exactSuggestion || exactCommand) {
                       runCommand(state.input);
@@ -722,7 +740,7 @@ export default function App() {
                   return;
                 }
 
-                if (event.key === "ArrowDown" && !state.isMenuOpen) {
+                if (event.key === "ArrowDown") {
                   event.preventDefault();
                   recallCommand("down");
                 }
@@ -741,7 +759,7 @@ export default function App() {
             />
           ) : null}
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       <AnimatePresence>
         {state.activeModal ? (

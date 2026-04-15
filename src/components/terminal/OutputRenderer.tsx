@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   ArrowLeft,
+  ArrowRight,
   ArrowUpRight,
   CheckCircle2,
   Copy,
@@ -80,7 +81,10 @@ function IntroRenderer({ payload }: { payload: IntroPayload }) {
           <p className="panel-section-label">Highlights</p>
           <ul className="panel-bullet-list">
             {payload.highlights.map((highlight) => (
-              <li key={highlight}>{`- ${highlight}`}</li>
+              <li key={highlight}>
+                <ArrowRight className="bullet-arrow-icon" size={13} />
+                <span>{highlight}</span>
+              </li>
             ))}
           </ul>
         </div>
@@ -111,7 +115,10 @@ function TimelineEntry({
 
       <ul className="panel-bullet-list">
         {entry.highlights.map((highlight) => (
-          <li key={highlight}>{`- ${highlight}`}</li>
+          <li key={highlight}>
+            <ArrowRight className="bullet-arrow-icon" size={13} />
+            <span>{highlight}</span>
+          </li>
         ))}
       </ul>
     </article>
@@ -227,7 +234,10 @@ function ProjectDetailRenderer({
         <p className="panel-section-label">Features</p>
         <ul className="panel-bullet-list">
           {project.features.map((feature) => (
-            <li key={feature}>{`- ${feature}`}</li>
+            <li key={feature}>
+              <ArrowRight className="bullet-arrow-icon" size={13} />
+              <span>{feature}</span>
+            </li>
           ))}
         </ul>
       </section>

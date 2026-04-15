@@ -7,6 +7,8 @@
 @layer base {
   :root {
     color-scheme: dark;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
     --bg: #080b10;
     --panel: #0c1016;
     --panel-soft: #0f141b;
@@ -153,6 +155,11 @@
   .dashboard-card {
     border: 1px solid var(--line-strong);
     margin-bottom: 22px;
+    transition: border-color 220ms var(--ease);
+  }
+
+  .dashboard-card:hover {
+    border-color: var(--accent);
   }
 
   .dashboard-shell-header {
@@ -226,9 +233,16 @@
     text-align: left;
     font-size: 1rem;
     line-height: 1.6;
+    transition: color 160ms var(--ease), border-color 160ms var(--ease), background 160ms var(--ease);
   }
 
   .dashboard-command-row:hover {
+    color: var(--text);
+    border-color: var(--line-strong);
+    background: var(--accent-soft);
+  }
+
+  .dashboard-activity-row:hover {
     color: var(--text);
     border-color: var(--line-strong);
     background: var(--accent-soft);
@@ -247,6 +261,14 @@
   .terminal-log-entry {
     display: grid;
     gap: 6px;
+    padding: 6px 8px;
+    margin: 0 -8px;
+    border-radius: 2px;
+    transition: background 160ms var(--ease);
+  }
+
+  .terminal-log-entry:hover {
+    background: rgba(135, 175, 240, 0.04);
   }
 
   .terminal-log-command {
@@ -297,6 +319,11 @@
     padding: 18px 20px 20px;
     border-top: 1px solid var(--line);
     background: var(--panel-soft);
+    transition: background 220ms var(--ease);
+  }
+
+  .terminal-input-area:hover {
+    background: #101520;
   }
 
   .terminal-input-shell {
@@ -401,6 +428,7 @@
     border: 0;
     background: transparent;
     text-align: left;
+    transition: background 140ms var(--ease);
   }
 
   .command-menu-item:hover,
@@ -483,6 +511,7 @@
     color: var(--text);
     font-size: 0.86rem;
     white-space: nowrap;
+    transition: border-color 160ms var(--ease), background 160ms var(--ease), color 160ms var(--ease);
   }
 
   .modal-header-link:hover {
@@ -520,11 +549,13 @@
     border: 1px solid var(--line);
     background: transparent;
     color: var(--muted-strong);
+    transition: color 160ms var(--ease), border-color 160ms var(--ease), background 160ms var(--ease);
   }
 
   .modal-close:hover {
     color: var(--text);
     border-color: var(--line-strong);
+    background: var(--accent-soft);
   }
 
   .modal-body {
@@ -605,6 +636,12 @@
     padding: 14px;
     border: 1px solid var(--line);
     background: rgba(255, 255, 255, 0.01);
+    transition: border-color 160ms var(--ease), background 160ms var(--ease);
+  }
+
+  .panel-mini-card:hover {
+    border-color: var(--line-strong);
+    background: var(--accent-soft);
   }
 
   .panel-mini-card-centered {
@@ -631,6 +668,13 @@
     border: 1px solid var(--line);
     color: var(--text);
     font-size: 0.88rem;
+    transition: border-color 160ms var(--ease), background 160ms var(--ease), color 160ms var(--ease);
+  }
+
+  .panel-chip:hover {
+    border-color: var(--line-strong);
+    background: var(--accent-soft);
+    color: var(--accent);
   }
 
   .panel-chip-muted {
@@ -652,10 +696,47 @@
     line-height: 1.65;
   }
 
+  .panel-bullet-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 8px;
+    margin: 0 -8px;
+    border-radius: 2px;
+    transition: color 160ms var(--ease), background 160ms var(--ease);
+  }
+
+  .panel-bullet-list li:hover {
+    color: var(--text);
+    background: rgba(135, 175, 240, 0.05);
+  }
+
+  .bullet-arrow-icon {
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 8px;
+    opacity: 0.7;
+    transition: transform 200ms var(--ease), opacity 200ms var(--ease);
+  }
+
+  .panel-bullet-list li:hover .bullet-arrow-icon {
+    transform: translateX(5px);
+    opacity: 1;
+  }
+
   .panel-skill-line {
     margin: 0;
     color: var(--muted-strong);
     line-height: 1.8;
+    padding: 4px 6px;
+    margin: 0 -6px;
+    border-radius: 2px;
+    transition: color 160ms var(--ease), background 160ms var(--ease);
+  }
+
+  .panel-skill-line:hover {
+    color: var(--text);
+    background: rgba(135, 175, 240, 0.04);
   }
 
   .panel-skill-line span:first-child {
@@ -673,10 +754,21 @@
     gap: 12px;
     padding: 14px;
     border: 1px solid var(--line);
+    transition: border-color 160ms var(--ease), background 160ms var(--ease);
+  }
+
+  .panel-timeline-entry:hover {
+    border-color: var(--line-strong);
+    background: rgba(135, 175, 240, 0.03);
   }
 
   .panel-promotion-group {
     border: 1px solid var(--line);
+    transition: border-color 160ms var(--ease);
+  }
+
+  .panel-promotion-group:hover {
+    border-color: var(--line-strong);
   }
 
   .panel-promotion-group-header {
@@ -758,6 +850,7 @@
     border: 1px solid var(--line);
     background: transparent;
     text-align: left;
+    transition: border-color 160ms var(--ease), background 160ms var(--ease);
   }
 
   .panel-project-row:hover,
@@ -786,6 +879,14 @@
     display: grid;
     gap: 6px;
     min-width: 180px;
+    padding: 8px;
+    margin: -8px;
+    border-radius: 2px;
+    transition: background 160ms var(--ease);
+  }
+
+  .panel-detail-item:hover {
+    background: rgba(135, 175, 240, 0.04);
   }
 
   .panel-detail-item p:last-child {
@@ -821,6 +922,7 @@
     background: transparent;
     color: #9ab7e8;
     font-size: 0.92rem;
+    transition: color 160ms var(--ease);
   }
 
   .panel-inline-action:hover {
@@ -836,6 +938,7 @@
     border: 1px solid var(--line);
     background: transparent;
     color: var(--text);
+    transition: border-color 160ms var(--ease), background 160ms var(--ease), color 160ms var(--ease);
   }
 
   .panel-link-button:hover {

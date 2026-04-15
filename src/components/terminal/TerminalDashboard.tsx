@@ -7,7 +7,9 @@ interface TerminalDashboardProps {
   currentLocation: string;
 }
 
-const starterCommands = ["/help"];
+const starterCommands = [
+  { command: "/help", description: "See all available commands and what they do." },
+];
 
 export function TerminalDashboard({
   recentActivity,
@@ -32,7 +34,7 @@ export function TerminalDashboard({
           <div>
             <p className="dashboard-section-label">Tips for getting started</p>
             <div className="dashboard-command-list">
-              {starterCommands.map((command) => (
+              {starterCommands.map(({ command, description }) => (
                 <button
                   key={command}
                   type="button"
@@ -40,7 +42,7 @@ export function TerminalDashboard({
                   onClick={() => onRunCommand(command)}
                 >
                   <span>{command}</span>
-                  <span>Open {command.replace("/", "")}</span>
+                  <span>{description}</span>
                 </button>
               ))}
             </div>

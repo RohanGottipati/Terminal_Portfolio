@@ -1,3 +1,5 @@
+import { AnimatePresence, motion } from "framer-motion";
+
 import { cn } from "@/lib/utils";
 import type { SessionLogEntry } from "@/types/terminal";
 
@@ -23,24 +25,32 @@ export function TerminalHistory({ history }: TerminalHistoryProps) {
 
   return (
     <div className="terminal-log">
-      {history.map((entry) => (
-        <article key={entry.id} className="terminal-log-entry">
-          <div className="terminal-log-command">
-            <span className="terminal-log-timestamp">{formatTimestamp(entry.createdAt)}</span>
-            <span className="terminal-log-glyph">&gt;</span>
-            <span className="terminal-log-input">{entry.input}</span>
-          </div>
-          <p
-            className={cn(
-              "terminal-log-summary",
-              entry.status === "error" && "is-error",
-              entry.status === "info" && "is-info"
-            )}
+      <AnimatePresence initial={false}>
+        {history.map((entry) => (
+          <motion.article
+            key={entry.id}
+            className="terminal-log-entry"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
           >
-            {entry.summary}
-          </p>
-        </article>
-      ))}
+            <div className="terminal-log-command">
+              <span className="terminal-log-timestamp">{formatTimestamp(entry.createdAt)}</span>
+              <span className="terminal-log-glyph">&gt;</span>
+              <span className="terminal-log-input">{entry.input}</span>
+            </div>
+            <p
+              className={cn(
+                "terminal-log-summary",
+                entry.status === "error" && "is-error",
+                entry.status === "info" && "is-info"
+              )}
+            >
+              {entry.summary}
+            </p>
+          </motion.article>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }
