@@ -75,7 +75,6 @@ const BOOT_LINES = [
 
 
 const LOCATIONS = ["Waterloo, ON", "Toronto, ON"];
-const RECENT_ACTIVITY_LIMIT = 3;
 const MENU_SCROLL_MARGIN = 24;
 const FOCUSABLE = "button:not([disabled]), a[href], [tabindex='0']";
 
@@ -598,7 +597,6 @@ export default function App() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [state.phase]);
 
-  const recentActivity = state.sessionLog.slice(-RECENT_ACTIVITY_LIMIT).reverse();
   const currentLocation = typedLocation || "\u00a0";
   const isIdleShell = state.sessionLog.length === 0;
 
@@ -703,7 +701,6 @@ export default function App() {
             className={cn("terminal-history", isIdleShell && "is-idle")}
           >
             <TerminalDashboard
-              recentActivity={recentActivity}
               onRunCommand={runCommand}
               currentLocation={currentLocation}
             />

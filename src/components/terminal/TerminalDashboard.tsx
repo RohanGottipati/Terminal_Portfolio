@@ -1,8 +1,6 @@
 import { portfolioData } from "@/data/portfolio";
-import type { SessionLogEntry } from "@/types/terminal";
 
 interface TerminalDashboardProps {
-  recentActivity: SessionLogEntry[];
   onRunCommand: (command: string) => void;
   currentLocation: string;
 }
@@ -12,7 +10,6 @@ const starterCommands = [
 ];
 
 export function TerminalDashboard({
-  recentActivity,
   onRunCommand,
   currentLocation,
 }: TerminalDashboardProps) {
@@ -57,19 +54,17 @@ export function TerminalDashboard({
             <hr className="dashboard-section-divider" />
 
             <div>
-              <p className="dashboard-section-label">Recent activity</p>
-              {recentActivity.length ? (
-                <div className="dashboard-activity-list">
-                  {recentActivity.map((item) => (
-                    <div key={item.id} className="dashboard-activity-row">
-                      <span>{item.input}</span>
-                      <span>{item.summary}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="dashboard-empty">No recent activity</p>
-              )}
+              <p className="dashboard-section-label">Most recent achievement</p>
+              <div className="dashboard-command-list">
+                <button
+                  type="button"
+                  className="dashboard-command-row"
+                  onClick={() => onRunCommand("/project caresync")}
+                >
+                  <span>Hack Canada Win - CareSync</span>
+                  <span>Open project</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

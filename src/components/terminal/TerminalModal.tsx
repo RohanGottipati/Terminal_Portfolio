@@ -101,6 +101,9 @@ export function TerminalModal({
             </p>
           </div>
           <div className="modal-header-controls">
+            <span className="modal-shortcut-hint" aria-label="Press Escape to close">
+              Esc
+            </span>
             <button
               ref={closeButtonRef}
               type="button"
